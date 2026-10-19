@@ -23,3 +23,27 @@ export async function register({ email, password, name }) {
     throw err;
   }
 }
+
+export async function login({ email, password }) {
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: { ...publicUserFields, passwordHash: true },
+  });
+  const passwordOk = user && (await bcrypt.compare(password, user.passwordHash));
+  // Same message for "no such user" and "wrong password", so the response
+  // doesn't reveal which emails are registered.
+  if (!passwordOk) {
+    throw new HttpError(401, 'Invalid email or password');
+  }
+  const { passwordHash, ...publicUser } = user;
+  return publicUser;
+}
+
+// Used by /me: the token can outlive the user (e.g. account deleted).
+export async function getUserById(id) {
+  const user = await prisma.user.findUnique({ where: { id }, select: publicUserFields });
+  if (!user) {
+    throw new HttpError(401, 'Not authenticated');
+  }
+  return user;
+}

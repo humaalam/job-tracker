@@ -1,4 +1,5 @@
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import { authRouter } from './routes/auth.js';
 import { notFound } from './middleware/notFound.js';
 import { errorHandler } from './middleware/errorHandler.js';
@@ -8,6 +9,8 @@ export const app = express();
 
 // Parse JSON request bodies into req.body.
 app.use(express.json());
+// Parse the Cookie header into req.cookies.
+app.use(cookieParser());
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
