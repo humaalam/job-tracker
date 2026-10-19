@@ -12,6 +12,7 @@ See [docs/SPEC.md](docs/SPEC.md) for the full spec, data model, API and build pl
 job-tracker/
 ├── client/   # React frontend (Vite)
 ├── server/   # Express API (Prisma + PostgreSQL)
+├── docker/   # Files used by Docker containers (DB init scripts)
 ├── docs/     # Spec and documentation
 └── deploy/   # AWS deployment notes and scripts
 ```
@@ -26,8 +27,16 @@ job-tracker/
 ```bash
 cp .env.example .env    # then edit values if needed
 npm install
-npm run db:up           # start PostgreSQL in Docker
+npm run db:up           # start PostgreSQL + Adminer in Docker
 ```
+
+Browse the database at http://localhost:8080 (Adminer). Log in with:
+
+- System: PostgreSQL
+- Server: `db`
+- Username, password and database: the values from your `.env`
+
+The init scripts in `docker/postgres/init/` only run on a **fresh** volume. To re-run them, reset the database with `docker compose down -v`. This deletes all local data.
 
 _More steps (migrations, running the apps) will be added as the project grows._
 

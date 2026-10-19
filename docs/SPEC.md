@@ -88,7 +88,9 @@ The app lets users sign up, track job applications through a fixed status pipeli
 ```
 job-tracker/
 ├── package.json          # Root: lists the workspaces; scripts to run/test everything at once
-├── docker-compose.yml    # Starts local Postgres in Docker
+├── docker-compose.yml    # Starts local Postgres + Adminer (DB web UI) in Docker
+├── docker/
+│   └── postgres/init/    # SQL run once on a fresh DB volume (creates the test database)
 ├── .env.example          # Template of required environment variables (no real secrets)
 ├── .gitignore            # Files git should ignore (node_modules, .env, build output)
 ├── README.md             # How to install, run, test, deploy
