@@ -163,7 +163,7 @@ Request flow: **route → middleware (auth, validate) → controller → service
 - `userId` → User (cascade delete)
 - `company`*, `roleTitle`*
 - `status` (default WISHLIST)
-- `appliedAt` (date, set automatically on the first move to APPLIED)
+- `appliedAt` (timestamp, set automatically on the first move to APPLIED; a full timestamp rather than date-only, to avoid timezone off-by-one bugs in JS)
 - `jobUrl`, `location`, `workMode`
 - `salaryMin`, `salaryMax`, `salaryCurrency` (default USD)
 - `jobDescription`, `resumeVersion`, `coverLetterVersion`, `notes`
@@ -195,6 +195,7 @@ Request flow: **route → middleware (auth, validate) → controller → service
 - `email`, `phone`, `linkedinUrl`
 - `notes`
 - `createdAt`, `updatedAt`
+- Index: `(applicationId)` (Postgres does not index foreign keys automatically)
 
 (* = required)
 

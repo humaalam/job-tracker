@@ -8,11 +8,120 @@ datasource db {
   provider = "postgresql"
 }
 
+enum ApplicationStatus {
+  WISHLIST
+  APPLIED
+  INTERVIEWING
+  OFFER
+  REJECTED
+  WITHDRAWN
+}
+
+enum WorkMode {
+  REMOTE
+  HYBRID
+  ONSITE
+}
+
+enum InterviewType {
+  PHONE_SCREEN
+  TECHNICAL
+  BEHAVIORAL
+  TAKE_HOME
+  ONSITE
+  FINAL
+  OTHER
+}
+
+enum InterviewOutcome {
+  PENDING
+  PASSED
+  FAILED
+  CANCELLED
+}
+
 model User {
-  id           String   @id @default(uuid()) @db.Uuid
-  email        String   @unique
+  id           String        @id @default(uuid()) @db.Uuid
+  email        String        @unique
   passwordHash String
   name         String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  applications Application[]
+}
+
+model Application {
+  id                 String            @id @default(uuid()) @db.Uuid
+  userId             String            @db.Uuid
+  user               User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company            String
+  roleTitle          String
+  status             ApplicationStatus @default(WISHLIST)
+  // Set automatically on the first move to APPLIED.
+  appliedAt          DateTime?
+  jobUrl             String?
+  location           String?
+  workMode           WorkMode?
+  salaryMin          Int?
+  salaryMax          Int?
+  salaryCurrency     String            @default("USD")
+  jobDescription     String?
+  resumeVersion      String?
+  coverLetterVersion String?
+  notes              String?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  statusChanges      StatusChange[]
+  interviews         Interview[]
+  contacts           Contact[]
+
+  @@index([userId, status])
+  @@index([userId, appliedAt])
+  @@index([userId, updatedAt])
+}
+
+// History of status changes. Rows are only ever inserted, never edited.
+model StatusChange {
+  id            String             @id @default(uuid()) @db.Uuid
+  applicationId String             @db.Uuid
+  application   Application        @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  // Null for the first entry, when the application is created.
+  fromStatus    ApplicationStatus?
+  toStatus      ApplicationStatus
+  changedAt     DateTime           @default(now())
+
+  @@index([applicationId, changedAt])
+}
+
+model Interview {
+  id              String           @id @default(uuid()) @db.Uuid
+  applicationId   String           @db.Uuid
+  application     Application      @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  type            InterviewType
+  scheduledAt     DateTime
+  durationMinutes Int?
+  locationOrLink  String?
+  interviewers    String?
+  outcome         InterviewOutcome @default(PENDING)
+  notes           String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([applicationId, scheduledAt])
+}
+
+model Contact {
+  id            String      @id @default(uuid()) @db.Uuid
+  applicationId String      @db.Uuid
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  name          String
+  title         String?
+  email         String?
+  phone         String?
+  linkedinUrl   String?
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([applicationId])
 }

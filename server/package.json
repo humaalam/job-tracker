@@ -8,7 +8,8 @@
     "start": "node src/server.js",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "postdb:migrate": "prisma generate"
+    "postdb:migrate": "prisma generate",
+    "db:studio": "prisma studio --port 5555"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.1",

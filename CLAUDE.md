@@ -31,6 +31,7 @@ docker exec -it job-tracker-db psql -U jobtracker   # SQL shell
 npm run db:migrate -w server                        # apply/create migrations, then prisma generate (postdb:migrate hook)
 npm run db:migrate -w server -- --name <change>     # create a new migration non-interactively
 npm run db:generate -w server                       # regenerate the Prisma client only
+npm run db:studio -w server                         # Prisma Studio at http://localhost:5555
 npm run dev:server     # API on http://localhost:4000 (node --watch)
 npm run dev:client     # run in client workspace (client package not created yet)
 npm test               # tests in all workspaces

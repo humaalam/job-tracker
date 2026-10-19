@@ -48,6 +48,7 @@ _More steps (migrations, running the apps) will be added as the project grows._
 | `npm run db:up` / `db:down` | Start / stop the local PostgreSQL container |
 | `npm run db:migrate -w server` | Apply/create migrations, then regenerate the Prisma client (add `-- --name <name>` for a new migration) |
 | `npm run db:generate -w server` | Regenerate the Prisma client only |
+| `npm run db:studio -w server` | Open Prisma Studio (browse/edit data) at http://localhost:5555 |
 | `npm run dev:server` | Start the API in watch mode |
 | `npm run dev:client` | Start the React dev server |
 | `npm test` | Run tests in all workspaces |
