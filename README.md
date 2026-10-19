@@ -29,7 +29,10 @@ cp .env.example .env            # then edit values if needed
 npm install
 npm run db:up                   # start PostgreSQL + Adminer in Docker
 npm run db:migrate -w server    # apply migrations and generate the Prisma client
+npm run db:seed -w server       # optional: demo data
 ```
+
+The seed creates a demo account (`demo@example.com` / `password123`) with 11 sample applications. Re-running it resets only the demo account's data.
 
 Browse the database at http://localhost:8080 (Adminer). Log in with:
 
@@ -48,6 +51,7 @@ _More steps (migrations, running the apps) will be added as the project grows._
 | `npm run db:up` / `db:down` | Start / stop the local PostgreSQL container |
 | `npm run db:migrate -w server` | Apply/create migrations, then regenerate the Prisma client (add `-- --name <name>` for a new migration) |
 | `npm run db:generate -w server` | Regenerate the Prisma client only |
+| `npm run db:seed -w server` | Reset the demo account's data (`demo@example.com` / `password123`) |
 | `npm run db:studio -w server` | Open Prisma Studio (browse/edit data) at http://localhost:5555 |
 | `npm run dev:server` | Start the API in watch mode |
 | `npm run dev:client` | Start the React dev server |

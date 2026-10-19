@@ -32,6 +32,7 @@ npm run db:migrate -w server                        # apply/create migrations, t
 npm run db:migrate -w server -- --name <change>     # create a new migration non-interactively
 npm run db:generate -w server                       # regenerate the Prisma client only
 npm run db:studio -w server                         # Prisma Studio at http://localhost:5555
+npm run db:seed -w server                           # re-runnable; resets only demo@example.com / password123
 npm run dev:server     # API on http://localhost:4000 (node --watch)
 npm run dev:client     # run in client workspace (client package not created yet)
 npm test               # tests in all workspaces
@@ -54,7 +55,7 @@ Run a command in one workspace with `-w server` / `-w client` (e.g. `npm install
 - `app.js` builds and exports the Express app without listening, so Supertest can import it. `server.js` only calls `listen`.
 - All API routes are under `/api`. Errors use the shape `{ error: { message, details? } }`.
 - **Ownership:** every query is scoped to the logged-in user. Interviews, contacts and status history are reached through `application.userId`. Another user's resource returns **404**, not 403.
-- **Status changes:** every change goes through one service function that updates `Application.status` and inserts a `StatusChange` row in a single `prisma.$transaction`. This also applies to status changes made via `PATCH /applications/:id`. Dashboard stats (response rate) are computed from `StatusChange`, so never bypass it.
+- **Status changes:** every change goes through one service function that updates `Application.status` and inserts a `StatusChange` row in a single `prisma.$transaction`. This also applies to status changes made via `PATCH /applications/:id`. Dashboard stats (response rate) are computed from `StatusChange`, so never bypass it. Only exception: `server/prisma/seed.js` writes backdated history directly, and it must keep `status` = the last history entry and set `appliedAt` = the APPLIED step.
 - **Client:**
   - talks to `/api` through a fetch wrapper with `credentials: 'include'`
   - in development, the Vite proxy forwards `/api` to `localhost:4000`

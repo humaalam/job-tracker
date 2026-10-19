@@ -4,6 +4,6 @@ import { config } from './src/config/env.js';
 
 export default defineConfig({
   schema: 'prisma/schema.prisma',
-  migrations: { path: 'prisma/migrations' },
+  migrations: { path: 'prisma/migrations', seed: 'node prisma/seed.js' },
   datasource: { url: config.databaseUrl },
 });
