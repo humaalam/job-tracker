@@ -1,12 +1,7 @@
-import express from 'express';
+// Import config first so .env is loaded before any other module runs.
+import { config } from './config/env.js';
+import { app } from './app.js';
 
-const app = express();
-const PORT = process.env.PORT || 4000;
-
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
-
-app.listen(PORT, () => {
-  console.log(`Server listening on http://localhost:${PORT}`);
+app.listen(config.port, () => {
+  console.log(`Server listening on http://localhost:${config.port} (${config.nodeEnv})`);
 });
