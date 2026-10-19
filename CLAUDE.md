@@ -16,7 +16,8 @@ Full-stack Job Application Tracker, built as a **learning project** (the owner i
 ## Stack (decided; see SPEC for rationale)
 
 - npm workspaces monorepo: `client/` (React + Vite, React Router, TanStack Query, Tailwind, @dnd-kit, Recharts) and `server/` (Express, Prisma, PostgreSQL, zod, bcrypt, JWT in an httpOnly cookie).
-- Plain JavaScript. **No TypeScript.**
+- Plain JavaScript. **No TypeScript.** Only exception: Prisma 7's `prisma-client` generator writes the client as `.ts` into `server/src/generated/prisma/` (gitignored, never edited). Node runs it via type stripping; our code imports `../generated/prisma/client.ts` only from `server/src/db/prisma.js`.
+- Prisma is pinned to stable **7.x** (`^7.10.1`). npm's `latest` tag points to an 8.0 release candidate, so don't install unpinned.
 - Tests: Vitest + Supertest (server), Vitest + React Testing Library (client).
 - Deploy target: AWS. Server runs in Docker on EC2 (image in ECR), database on RDS Postgres 17, client on S3 + CloudFront, with `/api/*` routed to EC2 so everything is same-origin.
 
@@ -27,7 +28,10 @@ npm run db:up          # start Postgres (5432) + Adminer (http://localhost:8080,
 npm run db:down        # stop containers (data kept in the pgdata volume)
 docker compose down -v # DESTRUCTIVE: wipes all local DB data; needed to re-run docker/postgres/init scripts
 docker exec -it job-tracker-db psql -U jobtracker   # SQL shell
-npm run dev:server     # run in server workspace (server package not created yet)
+npm run db:migrate -w server                        # apply/create migrations, then prisma generate (postdb:migrate hook)
+npm run db:migrate -w server -- --name <change>     # create a new migration non-interactively
+npm run db:generate -w server                       # regenerate the Prisma client only
+npm run dev:server     # API on http://localhost:4000 (node --watch)
 npm run dev:client     # run in client workspace (client package not created yet)
 npm test               # tests in all workspaces
 ```
@@ -40,7 +44,8 @@ Run a command in one workspace with `-w server` / `-w client` (e.g. `npm install
 - Two databases in the same container:
   - `jobtracker` (`DATABASE_URL`) for development
   - `jobtracker_test` (`TEST_DATABASE_URL`) for automated tests only, created by `docker/postgres/init/01-create-test-db.sql`
-- Prisma's CLI looks for `.env` next to the server package by default. When Prisma is set up, make sure it loads the **root** `.env`.
+- `server/src/config/env.js` loads the **root** `.env` (with `process.loadEnvFile`, only if the file exists) and validates variables. Prisma 7 doesn't load `.env` itself, so `server/prisma.config.js` imports this config. Add new variables to `config` there.
+- Prisma 7 notes: the DB URL lives in `prisma.config.js` (not the schema); the client needs the `@prisma/adapter-pg` adapter; `migrate dev` no longer runs `generate`, hence the `postdb:migrate` hook. The PG adapter ignores `?schema=` in the URL (we use `public`).
 
 ## Architecture (planned; see SPEC for full model and endpoints)
 

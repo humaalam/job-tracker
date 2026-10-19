@@ -19,15 +19,16 @@ job-tracker/
 
 ## Prerequisites
 
-- Node.js 22+
+- Node.js 22.18+ (24 recommended; needed to run the generated Prisma client)
 - Docker Desktop
 
 ## Getting started
 
 ```bash
-cp .env.example .env    # then edit values if needed
+cp .env.example .env            # then edit values if needed
 npm install
-npm run db:up           # start PostgreSQL + Adminer in Docker
+npm run db:up                   # start PostgreSQL + Adminer in Docker
+npm run db:migrate -w server    # apply migrations and generate the Prisma client
 ```
 
 Browse the database at http://localhost:8080 (Adminer). Log in with:
@@ -45,6 +46,8 @@ _More steps (migrations, running the apps) will be added as the project grows._
 | Command | What it does |
 |---|---|
 | `npm run db:up` / `db:down` | Start / stop the local PostgreSQL container |
+| `npm run db:migrate -w server` | Apply/create migrations, then regenerate the Prisma client (add `-- --name <name>` for a new migration) |
+| `npm run db:generate -w server` | Regenerate the Prisma client only |
 | `npm run dev:server` | Start the API in watch mode |
 | `npm run dev:client` | Start the React dev server |
 | `npm test` | Run tests in all workspaces |

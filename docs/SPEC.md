@@ -45,7 +45,9 @@ The app lets users sign up, track job applications through a fixed status pipeli
 | **Node.js** | Runs JavaScript outside the browser, on a server. | It lets us write the backend in the same language as the frontend. | Deno |
 | **Express** | A small library for building web servers and APIs in Node. | It's simple, very popular, and shows clearly how HTTP requests are handled. | Fastify |
 | **PostgreSQL** | A powerful, free relational (SQL) database. | Our data has relationships (user → applications → interviews), which SQL handles well. | MySQL |
-| **Prisma** | An ORM: it lets you talk to the database with JavaScript instead of raw SQL, and it manages schema changes ("migrations"). | You get readable models, autocomplete, and safe migrations, which is great for learning. | Drizzle ORM |
+| **Prisma** (7.x) | An ORM: it lets you talk to the database with JavaScript instead of raw SQL, and it manages schema changes ("migrations"). | You get readable models, autocomplete, and safe migrations, which is great for learning. | Drizzle ORM |
+
+> **Decision (Phase 1, Step 3):** We use stable Prisma 7 with the new `prisma-client` generator and the `@prisma/adapter-pg` driver adapter. That generator writes the client as TypeScript into `server/src/generated/prisma/`. It is gitignored and never edited, and Node (22.18+) runs it directly by stripping the types. All code we write stays plain JavaScript. We didn't choose the older `prisma-client-js` generator because it is deprecated, or Prisma 8 because it was only a release candidate.
 | **zod** | A library that checks incoming data has the right shape (e.g. email is a valid email). | It rejects bad input before it reaches the database. | Joi |
 | **bcrypt** | A library that hashes passwords so they're never stored in plain text. | It's the industry-standard way to store passwords safely. | argon2 |
 | **JWT in an httpOnly cookie** | A signed token proving who you are, stored in a cookie that browser JavaScript can't read. | It keeps users logged in without server-side sessions, and it's safer than localStorage. | Server sessions (express-session) |
@@ -117,6 +119,7 @@ job-tracker/
 │       └── test/         # Test setup and component tests
 ├── server/               # BACKEND: the Express API that talks to the database
 │   ├── Dockerfile        # Recipe for packaging the server as a Docker image (deploy phase)
+│   ├── prisma.config.js  # Prisma CLI settings: schema path, migrations path, database URL
 │   ├── prisma/
 │   │   ├── schema.prisma # The data model: tables, fields, relations
 │   │   ├── migrations/   # Auto-generated SQL history of schema changes
@@ -126,6 +129,7 @@ job-tracker/
 │   │   ├── app.js        # Builds the Express app (kept separate so tests can import it)
 │   │   ├── config/       # Reads and validates environment variables
 │   │   ├── db/           # The shared Prisma client
+│   │   ├── generated/    # Auto-generated Prisma client (.ts, gitignored; `npm run db:generate -w server`)
 │   │   ├── middleware/   # Code that runs on every request (auth check, validation, errors)
 │   │   ├── routes/       # Maps URLs + HTTP methods to controllers
 │   │   ├── controllers/  # Reads the request, calls a service, sends the response

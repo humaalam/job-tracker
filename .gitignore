@@ -10,6 +10,9 @@ node_modules/
 dist/
 build/
 
+# Generated Prisma client (rebuilt by `prisma generate`)
+server/src/generated/
+
 # Test coverage
 coverage/
 
