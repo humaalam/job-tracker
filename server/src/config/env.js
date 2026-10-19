@@ -13,13 +13,17 @@ if (!Number.isInteger(port) || port <= 0) {
   throw new Error(`Invalid PORT: "${process.env.PORT}"`);
 }
 
-const databaseUrl = process.env.DATABASE_URL;
+const nodeEnv = process.env.NODE_ENV ?? 'development';
+
+// Tests get their own database, so running them never touches dev data.
+const dbVar = nodeEnv === 'test' ? 'TEST_DATABASE_URL' : 'DATABASE_URL';
+const databaseUrl = process.env[dbVar];
 if (!databaseUrl) {
-  throw new Error('DATABASE_URL is not set');
+  throw new Error(`${dbVar} is not set`);
 }
 
 export const config = {
-  nodeEnv: process.env.NODE_ENV ?? 'development',
+  nodeEnv,
   port,
   databaseUrl,
 };

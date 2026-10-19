@@ -36,6 +36,8 @@ npm run db:seed -w server                           # re-runnable; resets only d
 npm run dev:server     # API on http://localhost:4000 (node --watch)
 npm run dev:client     # run in client workspace (client package not created yet)
 npm test               # tests in all workspaces
+npm test -w server     # server tests (Vitest); migrates jobtracker_test first (tests/globalSetup.js)
+npm run test:watch -w server                        # re-run tests on file change
 ```
 
 Run a command in one workspace with `-w server` / `-w client` (e.g. `npm install express -w server`).
