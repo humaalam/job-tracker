@@ -1,7 +1,6 @@
 import * as authService from '../services/authService.js';
-import { signToken, verifyToken } from '../utils/jwt.js';
-import { AUTH_COOKIE, setAuthCookie, clearAuthCookie } from '../utils/authCookie.js';
-import { HttpError } from '../utils/httpError.js';
+import { signToken } from '../utils/jwt.js';
+import { setAuthCookie, clearAuthCookie } from '../utils/authCookie.js';
 
 export async function register(req, res) {
   const user = await authService.register(req.body);
@@ -20,13 +19,8 @@ export function logout(req, res) {
   res.status(204).end();
 }
 
-// Reads the cookie itself for now; step 4 moves this into requireAuth middleware.
+// requireAuth runs first and sets req.userId.
 export async function me(req, res) {
-  const token = req.cookies[AUTH_COOKIE];
-  if (!token) {
-    throw new HttpError(401, 'Not authenticated');
-  }
-  const userId = verifyToken(token);
-  const user = await authService.getUserById(userId);
+  const user = await authService.getUserById(req.userId);
   res.json({ user });
 }
