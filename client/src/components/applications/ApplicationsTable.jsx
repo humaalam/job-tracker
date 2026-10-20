@@ -4,7 +4,8 @@ import StatusBadge from './StatusBadge.jsx';
 
 const COLUMNS = ['Company', 'Role', 'Status', 'Location', 'Salary', 'Applied', 'Updated'];
 
-export default function ApplicationsTable({ applications }) {
+// onEdit / onDelete are called with the application of the clicked row.
+export default function ApplicationsTable({ applications, onEdit, onDelete }) {
   return (
     // On narrow screens the table scrolls sideways instead of squashing the columns.
     <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
@@ -20,6 +21,9 @@ export default function ApplicationsTable({ applications }) {
                 {column}
               </th>
             ))}
+            <th scope="col" className="px-4 py-3">
+              <span className="sr-only">Actions</span>
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
@@ -47,6 +51,25 @@ export default function ApplicationsTable({ applications }) {
               </td>
               <td className="whitespace-nowrap px-4 py-3 text-slate-600">
                 {formatDate(application.updatedAt)}
+              </td>
+              <td className="whitespace-nowrap px-4 py-3 text-right">
+                {/* aria-label says which row, since every row has the same button text */}
+                <button
+                  type="button"
+                  onClick={() => onEdit(application)}
+                  aria-label={`Edit ${application.company}`}
+                  className="font-medium text-slate-600 hover:text-slate-900"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onDelete(application)}
+                  aria-label={`Delete ${application.company}`}
+                  className="ml-3 font-medium text-red-600 hover:text-red-800"
+                >
+                  Delete
+                </button>
               </td>
             </tr>
           ))}

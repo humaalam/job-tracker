@@ -13,10 +13,18 @@ export default function Pagination({ pagination, onPageChange, disabled }) {
         Showing {first}–{last} of {total}
       </p>
       <div className="flex gap-2">
-        <Button onClick={() => onPageChange(page - 1)} disabled={disabled || page <= 1}>
+        <Button
+          variant="secondary"
+          onClick={() => onPageChange(page - 1)}
+          disabled={disabled || page <= 1}
+        >
           Previous
         </Button>
-        <Button onClick={() => onPageChange(page + 1)} disabled={disabled || page >= totalPages}>
+        <Button
+          variant="secondary"
+          onClick={() => onPageChange(page + 1)}
+          disabled={disabled || page >= totalPages}
+        >
           Next
         </Button>
       </div>

@@ -11,3 +11,18 @@ export function listApplications(params = {}, options) {
   const queryString = query.toString();
   return api.get(`/applications${queryString ? `?${queryString}` : ''}`, options);
 }
+
+// Create and update return the saved application; delete returns nothing (204).
+export async function createApplication(data) {
+  const { application } = await api.post('/applications', data);
+  return application;
+}
+
+export async function updateApplication(id, data) {
+  const { application } = await api.patch(`/applications/${id}`, data);
+  return application;
+}
+
+export function deleteApplication(id) {
+  return api.delete(`/applications/${id}`);
+}

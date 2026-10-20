@@ -1,6 +1,10 @@
+import { useState } from 'react';
 import { useSearchParams } from 'react-router';
+import ApplicationFormModal from '../components/applications/ApplicationFormModal.jsx';
 import ApplicationsTable from '../components/applications/ApplicationsTable.jsx';
+import DeleteApplicationDialog from '../components/applications/DeleteApplicationDialog.jsx';
 import FilterBar from '../components/applications/FilterBar.jsx';
+import Button from '../components/ui/Button.jsx';
 import Pagination from '../components/ui/Pagination.jsx';
 import { useApplications } from '../hooks/useApplications.js';
 import { useDebouncedValue } from '../hooks/useDebouncedValue.js';
@@ -16,6 +20,11 @@ export default function ApplicationsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const page = Math.max(1, Number.parseInt(searchParams.get('page'), 10) || 1);
   const filters = filtersFromSearchParams(searchParams);
+
+  // Which dialog is open: `editing` is 'new' or the application being edited,
+  // `deleting` is the application to delete. null = closed.
+  const [editing, setEditing] = useState(null);
+  const [deleting, setDeleting] = useState(null);
 
   // The search box updates the URL on every keystroke, but we ask the API
   // only once typing pauses for 300 ms.
@@ -48,7 +57,21 @@ export default function ApplicationsPage() {
 
   return (
     <section>
-      <h1 className="text-2xl font-bold">Applications</h1>
+      <div className="flex items-center justify-between gap-4">
+        <h1 className="text-2xl font-bold">Applications</h1>
+        <Button onClick={() => setEditing('new')}>New application</Button>
+      </div>
+
+      {/* Rendered only while open; a fresh mount also means a fresh, empty form */}
+      {editing && (
+        <ApplicationFormModal
+          application={editing === 'new' ? undefined : editing}
+          onClose={() => setEditing(null)}
+        />
+      )}
+      {deleting && (
+        <DeleteApplicationDialog application={deleting} onClose={() => setDeleting(null)} />
+      )}
 
       <div className="mt-6">
         <FilterBar filters={filters} onChange={changeFilters} />
@@ -76,7 +99,11 @@ export default function ApplicationsPage() {
         {data && data.applications.length > 0 && (
           // Faded while new results load (the previous ones stay visible meanwhile).
           <div className={isPlaceholderData ? 'opacity-60' : undefined}>
-            <ApplicationsTable applications={data.applications} />
+            <ApplicationsTable
+              applications={data.applications}
+              onEdit={setEditing}
+              onDelete={setDeleting}
+            />
             <Pagination
               pagination={data.pagination}
               onPageChange={goToPage}
