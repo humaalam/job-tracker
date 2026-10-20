@@ -14,6 +14,23 @@ export const WORK_MODE_LABELS = {
   ONSITE: 'On-site',
 };
 
+export const INTERVIEW_TYPE_LABELS = {
+  PHONE_SCREEN: 'Phone screen',
+  TECHNICAL: 'Technical',
+  BEHAVIORAL: 'Behavioral',
+  TAKE_HOME: 'Take-home',
+  ONSITE: 'On-site',
+  FINAL: 'Final',
+  OTHER: 'Other',
+};
+
+export const INTERVIEW_OUTCOME_LABELS = {
+  PENDING: 'Pending',
+  PASSED: 'Passed',
+  FAILED: 'Failed',
+  CANCELLED: 'Cancelled',
+};
+
 // "20 Oct 2026" style, in the browser's language and time zone. '—' when empty.
 export function formatDate(isoString) {
   if (!isoString) return '—';

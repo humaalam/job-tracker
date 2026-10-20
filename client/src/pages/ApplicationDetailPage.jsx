@@ -5,6 +5,7 @@ import ApplicationFormModal from '../components/applications/ApplicationFormModa
 import DeleteApplicationDialog from '../components/applications/DeleteApplicationDialog.jsx';
 import StatusBadge from '../components/applications/StatusBadge.jsx';
 import StatusTimeline from '../components/applications/StatusTimeline.jsx';
+import InterviewsSection from '../components/interviews/InterviewsSection.jsx';
 import Button from '../components/ui/Button.jsx';
 import { useApplication } from '../hooks/useApplication.js';
 
@@ -63,10 +64,14 @@ export default function ApplicationDetailPage() {
         </div>
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-3">
-        <div className="rounded-lg border border-slate-200 bg-white p-6 lg:col-span-2">
-          <h2 className="mb-4 text-lg font-semibold">Details</h2>
-          <ApplicationDetails application={application} />
+      {/* items-start: each column is only as tall as its own cards */}
+      <div className="mt-6 grid items-start gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
+          <div className="rounded-lg border border-slate-200 bg-white p-6">
+            <h2 className="mb-4 text-lg font-semibold">Details</h2>
+            <ApplicationDetails application={application} />
+          </div>
+          <InterviewsSection application={application} />
         </div>
         <div className="rounded-lg border border-slate-200 bg-white p-6">
           <h2 className="mb-4 text-lg font-semibold">Status history</h2>
