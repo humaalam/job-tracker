@@ -68,6 +68,13 @@ The app lets users sign up, track job applications through a fixed status pipeli
 
 > **Decision (Phase 6, Step 2):** We use React Router 8 (the `react-router` package; the old `react-router-dom` name is no longer needed) in **declarative mode**: `<BrowserRouter>` in `main.jsx` and `<Routes>`/`<Route>` in `App.jsx`. The app pages are nested under a layout route (`AppLayout`, navbar + `<Outlet />`), and `/login` and `/register` sit outside it. We chose this over data mode (`createBrowserRouter` with loaders) because TanStack Query loads our data.
 
+> **Decision (Phase 6, Step 3):** All API calls go through `client/src/api/client.js` (`api.get/post/patch/delete`).
+> - Bodies are sent and parsed as JSON. A 204 reply returns `null`.
+> - Every failure throws an `ApiError` with `message` (the server's own message when there is one), `status` (`0` if the server couldn't be reached) and `details` (zod issues).
+> - Cancelled requests are re-thrown as they are.
+> - One file per resource in `api/` wraps these calls, and hooks in `hooks/` wrap them in TanStack Query.
+> - The shared `QueryClient` (`lib/queryClient.js`) keeps data fresh for 30 s and retries failed queries twice, but never retries a 4xx.
+
 ### Testing & tooling
 | Technology | What it is | Why we use it | One alternative |
 |---|---|---|---|

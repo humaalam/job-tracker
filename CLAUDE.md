@@ -60,7 +60,8 @@ Run a command in one workspace with `-w server` / `-w client` (e.g. `npm install
 - **Ownership:** every query is scoped to the logged-in user. Interviews, contacts and status history are reached through `application.userId`. Another user's resource returns **404**, not 403.
 - **Status changes:** every change goes through one service function that updates `Application.status` and inserts a `StatusChange` row in a single `prisma.$transaction`. This also applies to status changes made via `PATCH /applications/:id`. Dashboard stats (response rate) are computed from `StatusChange`, so never bypass it. Only exception: `server/prisma/seed.js` writes backdated history directly, and it must keep `status` = the last history entry and set `appliedAt` = the APPLIED step.
 - **Client:**
-  - talks to `/api` through a fetch wrapper with `credentials: 'include'`
+  - talks to `/api` only through the fetch wrapper `client/src/api/client.js` (`credentials: 'include'`); failures throw `ApiError` (`message`, `status`, `details`)
+  - layers: `api/<resource>.js` (plain calls) → `hooks/use<Thing>.js` (TanStack Query) → components
   - in development, the Vite proxy forwards `/api` to `localhost:4000`
   - server state lives in TanStack Query
   - auth state lives in `AuthContext`
