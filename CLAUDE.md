@@ -64,4 +64,4 @@ Run a command in one workspace with `-w server` / `-w client` (e.g. `npm install
   - layers: `api/<resource>.js` (plain calls) → `hooks/use<Thing>.js` (TanStack Query) → components
   - in development, the Vite proxy forwards `/api` to `localhost:4000`
   - server state lives in TanStack Query
-  - auth state lives in `AuthContext`
+  - auth state lives in `AuthContext` (`useAuth()`), backed by the `['auth','me']` query. Don't `navigate()` after login/logout: `ProtectedRoute` / `GuestLayout` redirect from the auth state (see SPEC, Phase 6 Step 4)

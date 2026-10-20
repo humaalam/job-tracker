@@ -75,6 +75,14 @@ The app lets users sign up, track job applications through a fixed status pipeli
 > - One file per resource in `api/` wraps these calls, and hooks in `hooks/` wrap them in TanStack Query.
 > - The shared `QueryClient` (`lib/queryClient.js`) keeps data fresh for 30 s and retries failed queries twice, but never retries a 4xx.
 
+> **Decision (Phase 6, Step 4):** Auth state is a TanStack Query entry, `['auth', 'me']` (the user, or `null` = logged out), filled from `GET /auth/me`. `AuthContext` exposes it as `useAuth()` → `{ user, isLoading, error, retry, login, register, logout }`.
+> - `login` / `register` / `logout` store the new user (or `null`) and **remove every other cached query**, so one user's data can never show up for the next.
+> - Redirects are driven by the auth state alone. No page calls `navigate()` after logging in or out, because TanStack Query delivers cache updates to components a moment later, so an immediate `navigate()` would race with them.
+>   - `ProtectedRoute` (around the app pages) sends logged-out users to `/login` with `state.from`.
+>   - `GuestLayout` (around `/login` and `/register`) sends logged-in users to `state.from` or `/`.
+> - If `/auth/me` fails for another reason (e.g. the API is down), `ProtectedRoute` shows the error with a "Try again" button instead of pretending the user is logged out.
+> - A 401 from any other query means the session expired. A global `QueryCache.onError` then sets the user to `null`, and `ProtectedRoute` redirects.
+
 ### Testing & tooling
 | Technology | What it is | Why we use it | One alternative |
 |---|---|---|---|
