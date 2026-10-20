@@ -93,7 +93,13 @@ The app lets users sign up, track job applications through a fixed status pipeli
 
 > **Decision (Phase 10, Step 2):** We use Recharts 3 (`^3.10.1`) for the weekly chart: a single-series column chart with one color (blue-600) and no legend. The title names the series. There's a hover tooltip per week, and a visually hidden table gives screen readers the same numbers. `weekStart` (`YYYY-MM-DD`) is read as a local date (`parseDateOnly`), never with `new Date('YYYY-MM-DD')`, which means UTC midnight.
 > - **CSV export** is a plain `<a href download>` link on the Applications page, not a `fetch`: the browser downloads the file itself and sends the cookie (same origin). The link carries the page's current filters and sorting (`exportCsvUrl` in `api/applications.js`, which shares the `/api` prefix `API_BASE` with `client.js`). Trade-off: if the session has expired, the browser shows the 401 JSON instead of the app's error message.
-> - Recharts pushes the JS bundle over Vite's 500 kB warning. That's fine for now; loading the dashboard lazily (`React.lazy`) is the fix if it ever matters.
+> - Recharts pushes the JS bundle over Vite's 500 kB warning.
+
+> **Decision (Phase 11, Step 1):** Client tests run with Vitest in **jsdom** (configured in the `test` block of `client/vite.config.js`), using React Testing Library + `@testing-library/user-event` + `@testing-library/jest-dom`. They live in `client/src/test/*.test.jsx`, with `setup.js` (matchers + cleanup) and `utils.jsx` (`renderWithProviders`: a fresh no-retry `QueryClient` + `MemoryRouter`).
+> - Tests find elements the way users do (label, role, visible text), not by class names.
+> - API calls are replaced with `vi.mock` on the `api/` module, so no server or database is needed.
+> - The Kanban test drives a real keyboard drag (Space, Right Arrow, Space). jsdom has no layout, so it fakes `getBoundingClientRect` for the columns, the cards and the `DragOverlay` copy. It checks the optimistic move, the rollback (with the refetch held back, so only the rollback can restore the card), and that the error shows once `onSettled`'s refetch has finished.
+> - Each test was checked by breaking the code it covers and confirming that it fails. That's fine for now; loading the dashboard lazily (`React.lazy`) is the fix if it ever matters.
 
 ### Testing & tooling
 | Technology | What it is | Why we use it | One alternative |

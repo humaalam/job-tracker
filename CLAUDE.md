@@ -39,6 +39,8 @@ npm run build -w client                             # production build into clie
 npm test               # tests in all workspaces
 npm test -w server     # server tests (Vitest); migrates jobtracker_test first (tests/globalSetup.js)
 npm run test:watch -w server                        # re-run tests on file change
+npm test -w client     # component tests (Vitest + jsdom + React Testing Library), no server or DB needed
+npx vitest run src/test/FilterBar.test.jsx          # (from client/) run one test file; add -t "<name>" for one test
 ```
 
 Run a command in one workspace with `-w server` / `-w client` (e.g. `npm install express -w server`).

@@ -12,4 +12,13 @@ export default defineConfig({
       '/api': 'http://localhost:4000',
     },
   },
+  // Vitest reads this part, so tests use the same plugins (JSX) as the app.
+  test: {
+    // jsdom: a browser imitation in Node (document, window, events), so
+    // components can render without a real browser.
+    environment: 'jsdom',
+    // Runs before every test file: adds the DOM matchers and cleans up.
+    setupFiles: './src/test/setup.js',
+    include: ['src/**/*.test.{js,jsx}'],
+  },
 });
