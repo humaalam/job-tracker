@@ -23,6 +23,12 @@ export async function updateApplication(id, data) {
   return application;
 }
 
+// Used by the Kanban board. The server also writes a status history entry.
+export async function changeApplicationStatus(id, status) {
+  const { application } = await api.patch(`/applications/${id}/status`, { status });
+  return application;
+}
+
 export function deleteApplication(id) {
   return api.delete(`/applications/${id}`);
 }
