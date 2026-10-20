@@ -74,6 +74,16 @@ describe('POST /api/applications', () => {
     expect(fieldErrors).toHaveProperty('status');
   });
 
+  it.each(['javascript:alert(1)', 'data:text/html,hi', 'ftp://jobs.example.com'])(
+    'returns 400 for a jobUrl that is not http(s): %s',
+    async (jobUrl) => {
+      const res = await agent.post('/api/applications').send({ ...newApplication, jobUrl });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error.details.fieldErrors).toHaveProperty('jobUrl');
+    },
+  );
+
   it('returns 400 when salaryMin is above salaryMax', async () => {
     const res = await agent
       .post('/api/applications')

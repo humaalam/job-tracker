@@ -61,6 +61,15 @@ describe('POST /api/applications/:id/contacts', () => {
     expect(fieldErrors).toHaveProperty('linkedinUrl');
   });
 
+  it('returns 400 for a linkedinUrl that is not http(s)', async () => {
+    const res = await agent
+      .post(`/api/applications/${application.id}/contacts`)
+      .send({ ...newContact, linkedinUrl: 'javascript:alert(1)' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error.details.fieldErrors).toHaveProperty('linkedinUrl');
+  });
+
   it.each([
     ['an unknown application id', UNKNOWN_ID],
     ['an id that is not a UUID', 'abc'],

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { optionalText, requiredText, notEmpty } from './common.js';
+import { optionalText, requiredText, notEmpty, webUrl } from './common.js';
 
 // Same values as the enums in schema.prisma.
 export const STATUSES = ['WISHLIST', 'APPLIED', 'INTERVIEWING', 'OFFER', 'REJECTED', 'WITHDRAWN'];
@@ -12,7 +12,7 @@ const salary = z.number().int().min(0).nullish();
 const applicationFields = z.object({
   company: requiredText('Company'),
   roleTitle: requiredText('Role title'),
-  jobUrl: z.url('Invalid URL').nullish(),
+  jobUrl: webUrl(),
   location: optionalText(200),
   workMode: z.enum(WORK_MODES).nullish(),
   salaryMin: salary,

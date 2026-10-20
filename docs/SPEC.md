@@ -183,7 +183,7 @@ Request flow: **route → middleware (auth, validate) → controller → service
 - `company`*, `roleTitle`*
 - `status` (default WISHLIST)
 - `appliedAt` (timestamp, set automatically on the first move to APPLIED; a full timestamp rather than date-only, to avoid timezone off-by-one bugs in JS)
-- `jobUrl`, `location`, `workMode`
+- `jobUrl` (`http(s)` only), `location`, `workMode`
 - `salaryMin`, `salaryMax`, `salaryCurrency` (default USD)
 - `jobDescription`, `resumeVersion`, `coverLetterVersion`, `notes`
 - `createdAt`, `updatedAt`
@@ -261,7 +261,7 @@ Request flow: **route → middleware (auth, validate) → controller → service
 **Contacts**
 - `GET` / `POST /applications/:id/contacts`: list (oldest first) / create; returns `{ contacts }` / `{ contact }`
 - `PATCH` / `DELETE /contacts/:contactId`
-- `email` is trimmed and lowercased; `linkedinUrl` must be a valid URL (any site); `phone` is free text (max 50 characters).
+- `email` is trimmed and lowercased; `linkedinUrl` must be a valid `http(s)` URL (any site); `phone` is free text (max 50 characters).
 
 **Dashboard**
 - `GET /dashboard/stats?tz=Europe/Berlin` returns `{ countsByStatus, total, applicationsPerWeek (last 12 weeks), responseRate, upcomingInterviews }`

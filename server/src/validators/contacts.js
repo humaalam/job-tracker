@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { optionalText, requiredText, notEmpty } from './common.js';
+import { optionalText, requiredText, notEmpty, webUrl } from './common.js';
 
 const contactFields = z.object({
   name: requiredText('Name'),
@@ -8,7 +8,7 @@ const contactFields = z.object({
   email: z.string().trim().toLowerCase().pipe(z.email('Invalid email')).nullish(),
   // Phone formats differ a lot between countries, so only cap the length.
   phone: optionalText(50),
-  linkedinUrl: z.url('Invalid URL').nullish(),
+  linkedinUrl: webUrl(),
   notes: optionalText(5000),
 });
 
