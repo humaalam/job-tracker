@@ -4,6 +4,7 @@ import {
   INTERVIEW_TYPE_LABELS,
   isWebUrl,
 } from '../../lib/format.js';
+import LinkButton from '../ui/LinkButton.jsx';
 
 // Written out in full (not built from pieces) so Tailwind can find the class names.
 const OUTCOME_COLORS = {
@@ -21,11 +22,6 @@ function OutcomeBadge({ outcome }) {
       {INTERVIEW_OUTCOME_LABELS[outcome]}
     </span>
   );
-}
-
-// A small text-style button, so each row doesn't get two big buttons.
-function LinkButton({ className = '', ...props }) {
-  return <button type="button" className={`text-sm hover:underline ${className}`} {...props} />;
 }
 
 // The application's interviews, soonest first (the API's order).

@@ -5,6 +5,7 @@ import ApplicationFormModal from '../components/applications/ApplicationFormModa
 import DeleteApplicationDialog from '../components/applications/DeleteApplicationDialog.jsx';
 import StatusBadge from '../components/applications/StatusBadge.jsx';
 import StatusTimeline from '../components/applications/StatusTimeline.jsx';
+import ContactsSection from '../components/contacts/ContactsSection.jsx';
 import InterviewsSection from '../components/interviews/InterviewsSection.jsx';
 import Button from '../components/ui/Button.jsx';
 import { useApplication } from '../hooks/useApplication.js';
@@ -73,9 +74,12 @@ export default function ApplicationDetailPage() {
           </div>
           <InterviewsSection application={application} />
         </div>
-        <div className="rounded-lg border border-slate-200 bg-white p-6">
-          <h2 className="mb-4 text-lg font-semibold">Status history</h2>
-          <StatusTimeline statusChanges={application.statusChanges} />
+        <div className="space-y-6">
+          <div className="rounded-lg border border-slate-200 bg-white p-6">
+            <h2 className="mb-4 text-lg font-semibold">Status history</h2>
+            <StatusTimeline statusChanges={application.statusChanges} />
+          </div>
+          <ContactsSection application={application} />
         </div>
       </div>
 

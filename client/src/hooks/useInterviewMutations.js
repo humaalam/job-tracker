@@ -1,13 +1,6 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { createInterview, deleteInterview, updateInterview } from '../api/interviews.js';
-
-// The interviews are shown from the application's detail query, so after a
-// change that one query is refetched. The lists don't show interviews.
-// Returning the promise keeps the mutation "pending" until that refetch is done.
-function useInvalidateApplication(applicationId) {
-  const queryClient = useQueryClient();
-  return () => queryClient.invalidateQueries({ queryKey: ['applications', 'detail', applicationId] });
-}
+import { useInvalidateApplication } from './useInvalidateApplication.js';
 
 export function useCreateInterview(applicationId) {
   const invalidate = useInvalidateApplication(applicationId);
