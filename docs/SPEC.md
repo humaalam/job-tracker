@@ -242,8 +242,11 @@ Request flow: **route → middleware (auth, validate) → controller → service
 - `email` is trimmed and lowercased; `linkedinUrl` must be a valid URL (any site); `phone` is free text (max 50 characters).
 
 **Dashboard**
-- `GET /dashboard/stats` returns `{ countsByStatus, total, applicationsPerWeek (last 12 weeks), responseRate, upcomingInterviews }`
-- `responseRate` = applications that reached INTERVIEWING, OFFER or REJECTED ÷ applications that reached APPLIED.
+- `GET /dashboard/stats?tz=Europe/Berlin` returns `{ countsByStatus, total, applicationsPerWeek (last 12 weeks), responseRate, upcomingInterviews }`
+- `countsByStatus`: every status with its current count (0 included); `total` is their sum.
+- `applicationsPerWeek`: `[{ weekStart: 'YYYY-MM-DD', count }]`, 12 entries, oldest first, empty weeks included. Counted by `appliedAt`; weeks start on Monday in the time zone `tz` (an IANA name, default `UTC`; the client sends the browser's zone).
+- `responseRate` = applications that reached APPLIED **and** INTERVIEWING, OFFER or REJECTED ÷ applications that reached APPLIED, read from `StatusChange` (so moving back later doesn't erase a response). A number from 0 to 1, or `null` when nothing has been applied to yet.
+- `upcomingInterviews`: the same as `GET /interviews/upcoming?days=7`.
 
 **Errors:** `{ error: { message, details? } }`, with codes 400 / 401 / 404 / 409 / 500.
 
