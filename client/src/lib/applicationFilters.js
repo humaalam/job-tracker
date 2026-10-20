@@ -54,6 +54,11 @@ export function applyFilterChanges(searchParams, changes) {
   return next;
 }
 
+// ?view=board shows the Kanban board; anything else (or nothing) shows the table.
+export function viewFromSearchParams(searchParams) {
+  return searchParams.get('view') === 'board' ? 'board' : 'table';
+}
+
 // True when something narrows the list (sorting doesn't count).
 export function hasActiveFilters({ status, workMode, search }) {
   return status.length > 0 || workMode.length > 0 || search.trim() !== '';

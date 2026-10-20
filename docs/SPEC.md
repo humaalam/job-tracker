@@ -23,7 +23,7 @@ The app lets users sign up, track job applications through a fixed status pipeli
 - **Interviews/events:** many per application (type, date/time, outcome, notes).
 - **Statuses:** fixed list `WISHLIST → APPLIED → INTERVIEWING → OFFER → REJECTED / WITHDRAWN`. Every change is logged with a timestamp.
 - **Company:** a plain text field on the application.
-- **Views:** a table (sort, filter, search) and a Kanban board (drag a card to change its status), with a toggle between them.
+- **Views:** a table (sort, filter, search) and a Kanban board (drag a card to change its status), with a toggle between them (kept in the URL as `?view=board`). The board isn't paginated: it loads up to 100 applications (the API's max `limit`) with the current filters, and says so when there are more.
 - **Dashboard:** counts per status, applications per week, response rate, interviews in the next 7 days.
 - **Extras:** Docker Compose for local Postgres, automated tests, CSV export, AWS deployment.
 - **Out of scope for v1:** OAuth, password reset, file uploads, a companies table, custom statuses.
