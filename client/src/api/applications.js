@@ -26,3 +26,9 @@ export async function updateApplication(id, data) {
 export function deleteApplication(id) {
   return api.delete(`/applications/${id}`);
 }
+
+// One application with its contacts, interviews and statusChanges (all oldest first).
+export async function getApplication(id, options) {
+  const { application } = await api.get(`/applications/${id}`, options);
+  return application;
+}

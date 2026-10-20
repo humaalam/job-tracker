@@ -31,3 +31,14 @@ export function formatSalary({ salaryMin, salaryMax, salaryCurrency }) {
   if (salaryMin != null && salaryMax != null) return money.formatRange(salaryMin, salaryMax);
   return salaryMin != null ? `from ${money.format(salaryMin)}` : `up to ${money.format(salaryMax)}`;
 }
+
+// "20 Oct 2026, 15:30" style, in the browser's language and time zone.
+export function formatDateTime(isoString) {
+  return new Date(isoString).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}
+
+// Only http(s) addresses become links. Anything else (e.g. "javascript:...")
+// could run code when clicked, so it is shown as plain text instead.
+export function isWebUrl(text) {
+  return /^https?:\/\//i.test(text ?? '');
+}

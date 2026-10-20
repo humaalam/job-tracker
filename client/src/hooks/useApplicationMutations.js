@@ -27,6 +27,11 @@ export function useUpdateApplication() {
 }
 
 export function useDeleteApplication() {
-  const invalidate = useInvalidateApplications();
-  return useMutation({ mutationFn: deleteApplication, onSuccess: invalidate });
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteApplication,
+    // Only the lists: refetching the deleted application's detail page would
+    // just fail with a 404 while that page is still on screen.
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['applications', 'list'] }),
+  });
 }

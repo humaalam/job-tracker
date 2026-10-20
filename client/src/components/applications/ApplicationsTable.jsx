@@ -1,4 +1,4 @@
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import { formatDate, formatSalary, WORK_MODE_LABELS } from '../../lib/format.js';
 import StatusBadge from './StatusBadge.jsx';
 
@@ -6,6 +6,8 @@ const COLUMNS = ['Company', 'Role', 'Status', 'Location', 'Salary', 'Applied', '
 
 // onEdit / onDelete are called with the application of the clicked row.
 export default function ApplicationsTable({ applications, onEdit, onDelete }) {
+  const location = useLocation();
+
   return (
     // On narrow screens the table scrolls sideways instead of squashing the columns.
     <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
@@ -30,7 +32,12 @@ export default function ApplicationsTable({ applications, onEdit, onDelete }) {
           {applications.map((application) => (
             <tr key={application.id} className="hover:bg-slate-50">
               <td className="whitespace-nowrap px-4 py-3 font-medium">
-                <Link to={`/applications/${application.id}`} className="text-blue-600 hover:underline">
+                {/* state: remember the filtered list URL, so the detail page can link back to it */}
+                <Link
+                  to={`/applications/${application.id}`}
+                  state={{ backTo: `${location.pathname}${location.search}` }}
+                  className="text-blue-600 hover:underline"
+                >
                   {application.company}
                 </Link>
               </td>

@@ -1,14 +1,15 @@
 import { useDeleteApplication } from '../../hooks/useApplicationMutations.js';
 import ConfirmDialog from '../ui/ConfirmDialog.jsx';
 
-export default function DeleteApplicationDialog({ application, onClose }) {
+// onDeleted runs after a successful delete (default: just close the dialog).
+export default function DeleteApplicationDialog({ application, onClose, onDeleted = onClose }) {
   const deleteMutation = useDeleteApplication();
 
   return (
     <ConfirmDialog
       title="Delete application?"
       confirmLabel="Delete"
-      onConfirm={() => deleteMutation.mutate(application.id, { onSuccess: onClose })}
+      onConfirm={() => deleteMutation.mutate(application.id, { onSuccess: onDeleted })}
       onClose={onClose}
       isPending={deleteMutation.isPending}
       error={deleteMutation.error}
