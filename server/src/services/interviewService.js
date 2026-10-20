@@ -61,6 +61,8 @@ export async function listUpcomingInterviews(userId, days) {
       outcome: { not: 'CANCELLED' },
     },
     orderBy: [{ scheduledAt: 'asc' }, { id: 'asc' }],
-    include: { application: { select: { id: true, company: true, roleTitle: true, status: true } } },
+    include: {
+      application: { select: { id: true, company: true, roleTitle: true, status: true } },
+    },
   });
 }

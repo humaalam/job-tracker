@@ -18,8 +18,8 @@ export default function DeleteApplicationDialog({ application, onClose, onDelete
         <strong className="text-slate-900">
           {application.roleTitle} at {application.company}
         </strong>{' '}
-        will be deleted, together with its interviews, contacts and status history. This
-        can&apos;t be undone.
+        will be deleted, together with its interviews, contacts and status history. This can&apos;t
+        be undone.
       </p>
     </ConfirmDialog>
   );

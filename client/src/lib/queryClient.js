@@ -9,7 +9,11 @@ export const queryClient = new QueryClient({
     // A 401 from any other query means the session expired: mark the user as
     // logged out, and ProtectedRoute sends them to the login page.
     onError: (error, query) => {
-      if (error instanceof ApiError && error.status === 401 && query.queryKey[0] !== meQueryKey[0]) {
+      if (
+        error instanceof ApiError &&
+        error.status === 401 &&
+        query.queryKey[0] !== meQueryKey[0]
+      ) {
         queryClient.setQueryData(meQueryKey, null);
       }
     },

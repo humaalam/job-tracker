@@ -1,22 +1,56 @@
+import { useState } from 'react';
+import ApplicationFormModal from '../components/applications/ApplicationFormModal.jsx';
 import StatCard from '../components/dashboard/StatCard.jsx';
 import StatusCounts from '../components/dashboard/StatusCounts.jsx';
 import WeeklyChart from '../components/dashboard/WeeklyChart.jsx';
 import UpcomingInterviews from '../components/interviews/UpcomingInterviews.jsx';
+import Button from '../components/ui/Button.jsx';
+import EmptyState from '../components/ui/EmptyState.jsx';
+import ErrorMessage from '../components/ui/ErrorMessage.jsx';
+import LoadingMessage from '../components/ui/LoadingMessage.jsx';
 import { useDashboardStats } from '../hooks/useDashboardStats.js';
 import { formatPercent } from '../lib/format.js';
 
 export default function DashboardPage() {
-  const { data: stats, isPending, isError, error } = useDashboardStats();
+  const { data: stats, isPending, isError, error, refetch } = useDashboardStats();
+  const [isCreating, setIsCreating] = useState(false);
+
+  const heading = <h1 className="text-2xl font-bold">Dashboard</h1>;
 
   if (isPending) {
-    return <p className="text-slate-500">Loading dashboard…</p>;
+    return (
+      <section className="space-y-6">
+        {heading}
+        <LoadingMessage>Loading dashboard…</LoadingMessage>
+      </section>
+    );
   }
 
-  if (isError) {
+  // Only when there is nothing to show. If a later refresh fails, the numbers
+  // we already have stay on screen with the error above them (see below).
+  if (isError && !stats) {
     return (
-      <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
-        {error.message}
-      </p>
+      <section className="space-y-6">
+        {heading}
+        <ErrorMessage onRetry={refetch}>{error.message}</ErrorMessage>
+      </section>
+    );
+  }
+
+  // A new account: zeros and empty charts wouldn't help, so say what to do first.
+  if (stats.total === 0) {
+    return (
+      <section className="space-y-6">
+        {heading}
+        <EmptyState
+          title="Welcome! Let's add your first application"
+          action={<Button onClick={() => setIsCreating(true)}>Add your first application</Button>}
+        >
+          Once you track a few applications, your numbers, weekly progress and upcoming interviews
+          show up here.
+        </EmptyState>
+        {isCreating && <ApplicationFormModal onClose={() => setIsCreating(false)} />}
+      </section>
     );
   }
 
@@ -25,7 +59,13 @@ export default function DashboardPage() {
 
   return (
     <section>
-      <h1 className="text-2xl font-bold">Dashboard</h1>
+      {heading}
+
+      {isError && (
+        <ErrorMessage onRetry={refetch} className="mt-4">
+          Couldn&apos;t refresh the numbers: {error.message}
+        </ErrorMessage>
+      )}
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Total applications" value={stats.total} />
@@ -39,7 +79,11 @@ export default function DashboardPage() {
               : 'Applications that got an interview, offer or rejection'
           }
         />
-        <StatCard label="Interviews this week" value={stats.upcomingInterviews.length} hint="Next 7 days" />
+        <StatCard
+          label="Interviews this week"
+          value={stats.upcomingInterviews.length}
+          hint="Next 7 days"
+        />
       </div>
 
       <div className="mt-6 rounded-lg border border-slate-200 bg-white p-6">

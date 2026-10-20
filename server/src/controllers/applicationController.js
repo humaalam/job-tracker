@@ -8,9 +8,15 @@ export async function create(req, res) {
 
 // validate(listQuerySchema, 'query') has already parsed req.query.
 export async function list(req, res) {
-  const { applications, pagination } = await applicationService.listApplications(req.userId, req.query);
+  const { applications, pagination } = await applicationService.listApplications(
+    req.userId,
+    req.query,
+  );
   res.json({ applications, pagination });
 }
+
+// The BOM: an invisible first character. Written as a char code, so it stays visible here.
+const UTF8_BOM = String.fromCharCode(0xfeff);
 
 export async function exportCsv(req, res) {
   const csv = await applicationService.exportApplicationsCsv(req.userId, req.query);
@@ -20,7 +26,7 @@ export async function exportCsv(req, res) {
   res.type('text/csv');
   // The BOM (an invisible first character) tells Excel the file is UTF-8,
   // so names like "Zürich" don't come out garbled.
-  res.send(`﻿${csv}`);
+  res.send(`${UTF8_BOM}${csv}`);
 }
 
 export async function getOne(req, res) {
@@ -29,12 +35,20 @@ export async function getOne(req, res) {
 }
 
 export async function update(req, res) {
-  const application = await applicationService.updateApplication(req.userId, req.params.id, req.body);
+  const application = await applicationService.updateApplication(
+    req.userId,
+    req.params.id,
+    req.body,
+  );
   res.json({ application });
 }
 
 export async function changeStatus(req, res) {
-  const application = await applicationService.changeStatus(req.userId, req.params.id, req.body.status);
+  const application = await applicationService.changeStatus(
+    req.userId,
+    req.params.id,
+    req.body.status,
+  );
   res.json({ application });
 }
 

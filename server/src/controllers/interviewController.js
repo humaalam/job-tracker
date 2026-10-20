@@ -13,7 +13,11 @@ export async function create(req, res) {
 }
 
 export async function update(req, res) {
-  const interview = await interviewService.updateInterview(req.userId, req.params.interviewId, req.body);
+  const interview = await interviewService.updateInterview(
+    req.userId,
+    req.params.interviewId,
+    req.body,
+  );
   res.json({ interview });
 }
 

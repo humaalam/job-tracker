@@ -7,7 +7,11 @@ import FilterBar from '../components/applications/FilterBar.jsx';
 import KanbanBoard from '../components/applications/KanbanBoard.jsx';
 import ViewToggle from '../components/applications/ViewToggle.jsx';
 import { exportCsvUrl } from '../api/applications.js';
-import Button, { buttonClass } from '../components/ui/Button.jsx';
+import Button from '../components/ui/Button.jsx';
+import { buttonClass } from '../components/ui/buttonClass.js';
+import EmptyState from '../components/ui/EmptyState.jsx';
+import ErrorMessage from '../components/ui/ErrorMessage.jsx';
+import LoadingMessage from '../components/ui/LoadingMessage.jsx';
 import Pagination from '../components/ui/Pagination.jsx';
 import { useApplications } from '../hooks/useApplications.js';
 import { useDebouncedValue } from '../hooks/useDebouncedValue.js';
@@ -48,7 +52,7 @@ export default function ApplicationsPage() {
     order: filters.order,
   };
 
-  const { data, isPending, isError, error, isPlaceholderData } = useApplications({
+  const { data, isPending, isError, error, isPlaceholderData, refetch } = useApplications({
     ...(view === 'board' ? { limit: BOARD_LIMIT } : { page }),
     ...filterParams,
   });
@@ -111,21 +115,45 @@ export default function ApplicationsPage() {
         <FilterBar filters={filters} onChange={changeFilters} />
       </div>
 
-      <div className="mt-6">
-        {isPending && <p className="text-slate-500">Loading applications…</p>}
+      <div className="mt-6 space-y-4">
+        {isPending && <LoadingMessage>Loading applications…</LoadingMessage>}
 
-        {isError && (
-          <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
-            {error.message}
-          </p>
-        )}
+        {/* If a refresh fails, the results we already have stay visible below it. */}
+        {isError && <ErrorMessage onRetry={refetch}>{error.message}</ErrorMessage>}
 
-        {view === 'board' && data && (
+        {/* Nothing at all (either view): explain why, and offer the next step. */}
+        {data &&
+          data.pagination.total === 0 &&
+          (hasActiveFilters(filters) ? (
+            <EmptyState
+              title="No applications match these filters"
+              action={
+                <Button
+                  variant="secondary"
+                  onClick={() => changeFilters({ status: [], workMode: [], search: '' })}
+                >
+                  Clear filters
+                </Button>
+              }
+            >
+              Try another search, or fewer status and work mode filters.
+            </EmptyState>
+          ) : (
+            <EmptyState
+              title="No applications yet"
+              action={<Button onClick={() => setEditing('new')}>Add your first application</Button>}
+            >
+              Add the jobs you are interested in or have applied to, then follow each one from
+              wishlist to offer.
+            </EmptyState>
+          ))}
+
+        {view === 'board' && data && data.pagination.total > 0 && (
           <div className={isPlaceholderData ? 'opacity-60' : undefined}>
             {data.pagination.total > data.applications.length && (
               <p className="mb-3 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
-                Showing {data.applications.length} of {data.pagination.total} applications. Use
-                the filters to narrow the board down.
+                Showing {data.applications.length} of {data.pagination.total} applications. Use the
+                filters to narrow the board down.
               </p>
             )}
             {/* A status filter shows only those columns (still in pipeline order); no filter shows all */}
@@ -140,15 +168,20 @@ export default function ApplicationsPage() {
           </div>
         )}
 
-        {view === 'table' && data && data.applications.length === 0 && (
-          <p className="text-slate-600">
-            {data.pagination.total > 0
-              ? 'There is nothing on this page.'
-              : hasActiveFilters(filters)
-                ? 'No applications match these filters.'
-                : 'No applications yet.'}
-          </p>
-        )}
+        {/* E.g. ?page=9 from an old link, or the last item on the last page was deleted */}
+        {view === 'table' &&
+          data &&
+          data.pagination.total > 0 &&
+          data.applications.length === 0 && (
+            <EmptyState
+              title="There is nothing on this page"
+              action={
+                <Button variant="secondary" onClick={() => goToPage(1)}>
+                  Go to page 1
+                </Button>
+              }
+            />
+          )}
 
         {view === 'table' && data && data.applications.length > 0 && (
           // Faded while new results load (the previous ones stay visible meanwhile).

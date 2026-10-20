@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router';
 import { useAuth } from '../context/AuthContext.jsx';
 import Button from '../components/ui/Button.jsx';
 import TextField from '../components/ui/TextField.jsx';
+import ErrorMessage from '../components/ui/ErrorMessage.jsx';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -25,11 +26,7 @@ export default function LoginPage() {
     <>
       <h1 className="text-2xl font-bold">Log in</h1>
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-        {error && !error.details && (
-          <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
-            {error.message}
-          </p>
-        )}
+        {error && !error.details && <ErrorMessage>{error.message}</ErrorMessage>}
         <TextField
           label="Email"
           type="email"
@@ -54,13 +51,10 @@ export default function LoginPage() {
       </form>
 
       {import.meta.env.DEV && (
-        <p className="mt-4 text-xs text-slate-500">
-          Demo account: demo@example.com / password123
-        </p>
+        <p className="mt-4 text-xs text-slate-500">Demo account: demo@example.com / password123</p>
       )}
       <p className="mt-4 text-sm text-slate-600">
-        No account?{' '}
-        {/* Pass the state on, so "where they were going" survives the switch */}
+        No account? {/* Pass the state on, so "where they were going" survives the switch */}
         <Link to="/register" state={location.state} className="text-blue-600 hover:underline">
           Register
         </Link>

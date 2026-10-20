@@ -17,7 +17,8 @@ export default function DeleteInterviewDialog({ applicationId, interview, onClos
       <p>
         The{' '}
         <strong className="text-slate-900">
-          {INTERVIEW_TYPE_LABELS[interview.type]} interview on {formatDateTime(interview.scheduledAt)}
+          {INTERVIEW_TYPE_LABELS[interview.type]} interview on{' '}
+          {formatDateTime(interview.scheduledAt)}
         </strong>{' '}
         will be deleted. This can&apos;t be undone.
       </p>

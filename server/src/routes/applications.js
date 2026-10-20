@@ -22,7 +22,11 @@ applicationsRouter.use(requireAuth);
 applicationsRouter.post('/', validate(createApplicationSchema), applicationController.create);
 applicationsRouter.get('/', validate(listQuerySchema, 'query'), applicationController.list);
 // Before /:id, otherwise "export.csv" would be read as an application id.
-applicationsRouter.get('/export.csv', validate(exportQuerySchema, 'query'), applicationController.exportCsv);
+applicationsRouter.get(
+  '/export.csv',
+  validate(exportQuerySchema, 'query'),
+  applicationController.exportCsv,
+);
 applicationsRouter.get('/:id', applicationController.getOne);
 applicationsRouter.patch('/:id', validate(updateApplicationSchema), applicationController.update);
 applicationsRouter.delete('/:id', applicationController.remove);
@@ -31,7 +35,11 @@ applicationsRouter.get('/:id/history', applicationController.history);
 
 // An application's interviews.
 applicationsRouter.get('/:id/interviews', interviewController.list);
-applicationsRouter.post('/:id/interviews', validate(createInterviewSchema), interviewController.create);
+applicationsRouter.post(
+  '/:id/interviews',
+  validate(createInterviewSchema),
+  interviewController.create,
+);
 
 // An application's contacts.
 applicationsRouter.get('/:id/contacts', contactController.list);

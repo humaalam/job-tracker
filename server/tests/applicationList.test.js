@@ -6,10 +6,37 @@ import { alice, bob, registeredAgent } from './helpers/auth.js';
 // and the expected order is easy to read. Row i was updated on Jan i+1.
 const rows = [
   { company: 'Acme', roleTitle: 'Frontend Developer', status: 'WISHLIST', workMode: 'REMOTE' },
-  { company: 'Globex', roleTitle: 'Backend Engineer', status: 'APPLIED', workMode: 'HYBRID', location: 'Chicago', appliedAt: day(2), salaryMax: 120000 },
-  { company: 'Initech', roleTitle: 'Full-Stack Developer', status: 'INTERVIEWING', workMode: 'ONSITE', appliedAt: day(1), salaryMax: 90000 },
-  { company: 'Hooli', roleTitle: 'Platform Engineer', status: 'REJECTED', workMode: 'REMOTE', appliedAt: day(3) },
-  { company: 'Umbrella', roleTitle: 'React developer', status: 'APPLIED', workMode: 'REMOTE', appliedAt: day(4) },
+  {
+    company: 'Globex',
+    roleTitle: 'Backend Engineer',
+    status: 'APPLIED',
+    workMode: 'HYBRID',
+    location: 'Chicago',
+    appliedAt: day(2),
+    salaryMax: 120000,
+  },
+  {
+    company: 'Initech',
+    roleTitle: 'Full-Stack Developer',
+    status: 'INTERVIEWING',
+    workMode: 'ONSITE',
+    appliedAt: day(1),
+    salaryMax: 90000,
+  },
+  {
+    company: 'Hooli',
+    roleTitle: 'Platform Engineer',
+    status: 'REJECTED',
+    workMode: 'REMOTE',
+    appliedAt: day(3),
+  },
+  {
+    company: 'Umbrella',
+    roleTitle: 'React developer',
+    status: 'APPLIED',
+    workMode: 'REMOTE',
+    appliedAt: day(4),
+  },
 ];
 
 function day(n) {
@@ -43,7 +70,9 @@ describe('GET /api/applications: defaults', () => {
 
   it("never includes another user's applications", async () => {
     const bobAgent = await registeredAgent(bob);
-    await bobAgent.post('/api/applications').send({ company: 'Bob Co', roleTitle: 'Dev', workMode: 'REMOTE' });
+    await bobAgent
+      .post('/api/applications')
+      .send({ company: 'Bob Co', roleTitle: 'Dev', workMode: 'REMOTE' });
 
     const { companies, body } = await list('?workMode=REMOTE&search=co');
 
@@ -113,9 +142,24 @@ describe('sorting', () => {
   });
 
   it('keeps empty appliedAt / salaryMax at the end in both directions', async () => {
-    expect((await list('?sort=appliedAt&order=desc')).companies).toEqual(['Umbrella', 'Hooli', 'Globex', 'Initech', 'Acme']);
-    expect((await list('?sort=appliedAt&order=asc')).companies).toEqual(['Initech', 'Globex', 'Hooli', 'Umbrella', 'Acme']);
-    expect((await list('?sort=salaryMax&order=asc')).companies.slice(0, 2)).toEqual(['Initech', 'Globex']);
+    expect((await list('?sort=appliedAt&order=desc')).companies).toEqual([
+      'Umbrella',
+      'Hooli',
+      'Globex',
+      'Initech',
+      'Acme',
+    ]);
+    expect((await list('?sort=appliedAt&order=asc')).companies).toEqual([
+      'Initech',
+      'Globex',
+      'Hooli',
+      'Umbrella',
+      'Acme',
+    ]);
+    expect((await list('?sort=salaryMax&order=asc')).companies.slice(0, 2)).toEqual([
+      'Initech',
+      'Globex',
+    ]);
   });
 });
 

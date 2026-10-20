@@ -55,10 +55,23 @@ export const updateApplicationSchema = applicationFields
 const commaList = (values) =>
   z
     .string()
-    .transform((s) => s.split(',').map((v) => v.trim()).filter(Boolean))
+    .transform((s) =>
+      s
+        .split(',')
+        .map((v) => v.trim())
+        .filter(Boolean),
+    )
     .pipe(z.array(z.enum(values)).min(1));
 
-export const SORT_FIELDS = ['updatedAt', 'createdAt', 'appliedAt', 'company', 'roleTitle', 'status', 'salaryMax'];
+export const SORT_FIELDS = [
+  'updatedAt',
+  'createdAt',
+  'appliedAt',
+  'company',
+  'roleTitle',
+  'status',
+  'salaryMax',
+];
 
 // GET /applications (the CSV export below takes the same filters).
 export const listQuerySchema = z.object({

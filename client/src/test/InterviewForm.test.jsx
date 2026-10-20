@@ -30,7 +30,12 @@ describe('InterviewForm', () => {
     // Built the same way here, so the test passes in any time zone.
     expect(body.scheduledAt).toBe(new Date('2026-11-03T16:00').toISOString());
     expect(body.scheduledAt).toMatch(/Z$/);
-    expect(body).toMatchObject({ type: 'PHONE_SCREEN', outcome: 'PENDING', durationMinutes: 45, notes: null });
+    expect(body).toMatchObject({
+      type: 'PHONE_SCREEN',
+      outcome: 'PENDING',
+      durationMinutes: 45,
+      notes: null,
+    });
   });
 
   it('shows a saved UTC time in local time when editing', () => {

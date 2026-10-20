@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router';
 import { useAuth } from '../context/AuthContext.jsx';
 import Button from '../components/ui/Button.jsx';
 import TextField from '../components/ui/TextField.jsx';
+import ErrorMessage from '../components/ui/ErrorMessage.jsx';
 
 export default function RegisterPage() {
   const { register } = useAuth();
@@ -26,11 +27,7 @@ export default function RegisterPage() {
     <>
       <h1 className="text-2xl font-bold">Create an account</h1>
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-        {error && !error.details && (
-          <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
-            {error.message}
-          </p>
-        )}
+        {error && !error.details && <ErrorMessage>{error.message}</ErrorMessage>}
         <TextField
           label="Name"
           autoComplete="name"

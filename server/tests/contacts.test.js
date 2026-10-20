@@ -40,7 +40,11 @@ describe('POST /api/applications/:id/contacts', () => {
     const res = await agent.post(`/api/applications/${application.id}/contacts`).send(newContact);
 
     expect(res.status).toBe(201);
-    expect(res.body.contact).toMatchObject({ ...newContact, applicationId: application.id, email: null });
+    expect(res.body.contact).toMatchObject({
+      ...newContact,
+      applicationId: application.id,
+      email: null,
+    });
   });
 
   it('trims the name and lowercases the email', async () => {
@@ -106,7 +110,11 @@ describe('PATCH /api/contacts/:contactId', () => {
     const res = await agent.patch(`/api/contacts/${created.id}`).send({ title: 'Director' });
 
     expect(res.status).toBe(200);
-    expect(res.body.contact).toMatchObject({ name: 'Sam Lee', title: 'Director', phone: '+1 555 0100' });
+    expect(res.body.contact).toMatchObject({
+      name: 'Sam Lee',
+      title: 'Director',
+      phone: '+1 555 0100',
+    });
   });
 
   it('clears an optional field when it is set to null', async () => {
@@ -133,7 +141,9 @@ describe('PATCH /api/contacts/:contactId', () => {
     const created = await addContact();
     const otherApp = await createAs(agent, { company: 'Initech', roleTitle: 'Developer' });
 
-    const res = await agent.patch(`/api/contacts/${created.id}`).send({ notes: 'x', applicationId: otherApp.id });
+    const res = await agent
+      .patch(`/api/contacts/${created.id}`)
+      .send({ notes: 'x', applicationId: otherApp.id });
 
     expect(res.body.contact.applicationId).toBe(application.id);
   });
@@ -183,7 +193,10 @@ describe("ownership: Bob can't reach Alice's contacts", () => {
 
   it('cannot list or add contacts on her application', async () => {
     await bobAgent.get(`/api/applications/${application.id}/contacts`).expect(404);
-    await bobAgent.post(`/api/applications/${application.id}/contacts`).send(newContact).expect(404);
+    await bobAgent
+      .post(`/api/applications/${application.id}/contacts`)
+      .send(newContact)
+      .expect(404);
 
     expect(await prisma.contact.count()).toBe(1);
   });

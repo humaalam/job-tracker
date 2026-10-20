@@ -2,7 +2,15 @@ import { z } from 'zod';
 import { optionalText, notEmpty } from './common.js';
 
 // Same values as the enums in schema.prisma.
-export const INTERVIEW_TYPES = ['PHONE_SCREEN', 'TECHNICAL', 'BEHAVIORAL', 'TAKE_HOME', 'ONSITE', 'FINAL', 'OTHER'];
+export const INTERVIEW_TYPES = [
+  'PHONE_SCREEN',
+  'TECHNICAL',
+  'BEHAVIORAL',
+  'TAKE_HOME',
+  'ONSITE',
+  'FINAL',
+  'OTHER',
+];
 export const INTERVIEW_OUTCOMES = ['PENDING', 'PASSED', 'FAILED', 'CANCELLED'];
 
 const interviewFields = z.object({

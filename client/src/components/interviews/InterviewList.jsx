@@ -41,7 +41,9 @@ export default function InterviewList({ interviews, onEdit, onDelete }) {
                 <OutcomeBadge outcome={interview.outcome} />
               </p>
               <p className="mt-1 text-sm text-slate-600">
-                <time dateTime={interview.scheduledAt}>{formatDateTime(interview.scheduledAt)}</time>
+                <time dateTime={interview.scheduledAt}>
+                  {formatDateTime(interview.scheduledAt)}
+                </time>
                 {interview.durationMinutes != null && ` · ${interview.durationMinutes} min`}
               </p>
             </div>

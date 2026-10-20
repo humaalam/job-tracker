@@ -30,7 +30,11 @@ export default function ContactsSection({ application }) {
         <ContactFormModal applicationId={application.id} contact={dialog.contact} onClose={close} />
       )}
       {dialog?.mode === 'delete' && (
-        <DeleteContactDialog applicationId={application.id} contact={dialog.contact} onClose={close} />
+        <DeleteContactDialog
+          applicationId={application.id}
+          contact={dialog.contact}
+          onClose={close}
+        />
       )}
     </div>
   );

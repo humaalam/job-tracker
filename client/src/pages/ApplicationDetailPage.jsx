@@ -8,6 +8,9 @@ import StatusTimeline from '../components/applications/StatusTimeline.jsx';
 import ContactsSection from '../components/contacts/ContactsSection.jsx';
 import InterviewsSection from '../components/interviews/InterviewsSection.jsx';
 import Button from '../components/ui/Button.jsx';
+import EmptyState from '../components/ui/EmptyState.jsx';
+import ErrorMessage from '../components/ui/ErrorMessage.jsx';
+import LoadingMessage from '../components/ui/LoadingMessage.jsx';
 import { useApplication } from '../hooks/useApplication.js';
 
 export default function ApplicationDetailPage() {
@@ -18,7 +21,7 @@ export default function ApplicationDetailPage() {
   // page was opened directly (e.g. from a bookmark).
   const backTo = location.state?.backTo ?? '/applications';
 
-  const { data: application, isPending, isError, error } = useApplication(id);
+  const { data: application, isPending, isError, error, refetch } = useApplication(id);
   const [dialog, setDialog] = useState(null); // null, 'edit' or 'delete'
 
   const backLink = (
@@ -28,17 +31,26 @@ export default function ApplicationDetailPage() {
   );
 
   if (isPending) {
-    return <p className="text-slate-500">Loading application…</p>;
+    return (
+      <section className="space-y-4">
+        {backLink}
+        <LoadingMessage>Loading application…</LoadingMessage>
+      </section>
+    );
   }
 
-  if (isError) {
+  if (isError && !application) {
     return (
-      <section>
+      <section className="space-y-4">
         {backLink}
-        <p role="alert" className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
-          {/* e.g. 404 "Application not found": it doesn't exist, or it belongs to someone else */}
-          {error.message}
-        </p>
+        {/* 404: it doesn't exist, or it belongs to someone else. Asking again won't help. */}
+        {error.status === 404 ? (
+          <EmptyState title="Application not found">
+            It may have been deleted, or the link is wrong.
+          </EmptyState>
+        ) : (
+          <ErrorMessage onRetry={refetch}>{error.message}</ErrorMessage>
+        )}
       </section>
     );
   }
@@ -46,6 +58,13 @@ export default function ApplicationDetailPage() {
   return (
     <section>
       {backLink}
+
+      {/* A later refresh failed: keep showing what we have, with the error above it. */}
+      {isError && (
+        <ErrorMessage onRetry={refetch} className="mt-4">
+          Couldn&apos;t refresh this application: {error.message}
+        </ErrorMessage>
+      )}
 
       <div className="mt-2 flex flex-wrap items-start justify-between gap-4">
         <div>

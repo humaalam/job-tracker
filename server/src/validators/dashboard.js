@@ -17,5 +17,9 @@ const isTimeZone = (tz) => {
 
 // GET /dashboard/stats?tz=Europe/Berlin
 export const statsQuerySchema = z.object({
-  tz: z.string().trim().refine(isTimeZone, 'Unknown time zone, use a name like Europe/Berlin').default('UTC'),
+  tz: z
+    .string()
+    .trim()
+    .refine(isTimeZone, 'Unknown time zone, use a name like Europe/Berlin')
+    .default('UTC'),
 });

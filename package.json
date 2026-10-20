@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Full-stack job application tracker (React + Express + PostgreSQL)",
+  "type": "module",
   "workspaces": [
     "client",
     "server"
@@ -12,9 +13,22 @@
     "dev:client": "npm run dev -w client",
     "test": "npm test --workspaces --if-present",
     "db:up": "docker compose up -d",
-    "db:down": "docker compose down"
+    "db:down": "docker compose down",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "engines": {
     "node": ">=22.18"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.13.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10"
   }
 }

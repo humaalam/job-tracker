@@ -68,7 +68,10 @@ describe('PATCH /api/applications/:id/status', () => {
 
   it('returns 404 for an unknown id and 401 without a cookie', async () => {
     await setStatus(UNKNOWN_ID, 'APPLIED').expect(404);
-    await request(app).patch(`/api/applications/${UNKNOWN_ID}/status`).send({ status: 'APPLIED' }).expect(401);
+    await request(app)
+      .patch(`/api/applications/${UNKNOWN_ID}/status`)
+      .send({ status: 'APPLIED' })
+      .expect(401);
   });
 });
 
@@ -81,7 +84,10 @@ describe('PATCH /api/applications/:id with a status', () => {
       .send({ notes: 'Applied via referral', status: 'APPLIED' });
 
     expect(res.status).toBe(200);
-    expect(res.body.application).toMatchObject({ notes: 'Applied via referral', status: 'APPLIED' });
+    expect(res.body.application).toMatchObject({
+      notes: 'Applied via referral',
+      status: 'APPLIED',
+    });
     expect(res.body.application.appliedAt).not.toBeNull();
     expect(await historyOf(created.id)).toEqual([
       [null, 'WISHLIST'],
@@ -90,7 +96,11 @@ describe('PATCH /api/applications/:id with a status', () => {
   });
 
   it('changes nothing when part of the update is rejected', async () => {
-    const created = await createAs(agent, { ...newApplication, salaryMin: 80000, salaryMax: 100000 });
+    const created = await createAs(agent, {
+      ...newApplication,
+      salaryMin: 80000,
+      salaryMax: 100000,
+    });
 
     const res = await agent
       .patch(`/api/applications/${created.id}`)
@@ -124,8 +134,14 @@ describe("ownership: Bob can't change or read Alice's status", () => {
     const created = await createAs(agent);
     const bobAgent = await registeredAgent(bob);
 
-    await bobAgent.patch(`/api/applications/${created.id}/status`).send({ status: 'REJECTED' }).expect(404);
-    await bobAgent.patch(`/api/applications/${created.id}`).send({ status: 'REJECTED' }).expect(404);
+    await bobAgent
+      .patch(`/api/applications/${created.id}/status`)
+      .send({ status: 'REJECTED' })
+      .expect(404);
+    await bobAgent
+      .patch(`/api/applications/${created.id}`)
+      .send({ status: 'REJECTED' })
+      .expect(404);
     await bobAgent.get(`/api/applications/${created.id}/history`).expect(404);
 
     expect(await historyOf(created.id)).toEqual([[null, 'WISHLIST']]);

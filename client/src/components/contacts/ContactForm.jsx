@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Button from '../ui/Button.jsx';
 import TextField from '../ui/TextField.jsx';
+import ErrorMessage from '../ui/ErrorMessage.jsx';
 
 // Every field the form edits. Inputs always hold text, so every value is a string.
 const EMPTY_VALUES = {
@@ -15,9 +16,7 @@ const EMPTY_VALUES = {
 // API values (null) -> form values (strings).
 function toFormValues(contact) {
   if (!contact) return EMPTY_VALUES;
-  return Object.fromEntries(
-    Object.keys(EMPTY_VALUES).map((key) => [key, contact[key] ?? '']),
-  );
+  return Object.fromEntries(Object.keys(EMPTY_VALUES).map((key) => [key, contact[key] ?? '']));
 }
 
 // Form values -> request body. Empty text becomes null (which clears the field).
@@ -50,11 +49,7 @@ export default function ContactForm({ contact, onSubmit, onCancel, isSaving, err
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {error && !hasFieldErrors && (
-        <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
-          {error.message}
-        </p>
-      )}
+      {error && !hasFieldErrors && <ErrorMessage>{error.message}</ErrorMessage>}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <TextField label="Name *" required maxLength={200} {...field('name')} />

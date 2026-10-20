@@ -2,6 +2,7 @@ import { Navigate, Outlet, useLocation } from 'react-router';
 import { useAuth } from '../../context/AuthContext.jsx';
 import Button from '../ui/Button.jsx';
 import FullPageMessage from '../ui/FullPageMessage.jsx';
+import LoadingMessage from '../ui/LoadingMessage.jsx';
 
 // Wraps the app's pages: only logged-in users get through.
 export default function ProtectedRoute() {
@@ -9,7 +10,11 @@ export default function ProtectedRoute() {
   const location = useLocation();
 
   if (isLoading) {
-    return <FullPageMessage>Loading…</FullPageMessage>;
+    return (
+      <FullPageMessage>
+        <LoadingMessage />
+      </FullPageMessage>
+    );
   }
   if (user) {
     return <Outlet />;

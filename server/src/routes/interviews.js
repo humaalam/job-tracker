@@ -11,6 +11,14 @@ export const interviewsRouter = Router();
 interviewsRouter.use(requireAuth);
 
 // Before /:interviewId, so "upcoming" is never read as an id.
-interviewsRouter.get('/upcoming', validate(upcomingQuerySchema, 'query'), interviewController.upcoming);
-interviewsRouter.patch('/:interviewId', validate(updateInterviewSchema), interviewController.update);
+interviewsRouter.get(
+  '/upcoming',
+  validate(upcomingQuerySchema, 'query'),
+  interviewController.upcoming,
+);
+interviewsRouter.patch(
+  '/:interviewId',
+  validate(updateInterviewSchema),
+  interviewController.update,
+);
 interviewsRouter.delete('/:interviewId', interviewController.remove);

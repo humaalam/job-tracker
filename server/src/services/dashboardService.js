@@ -73,5 +73,11 @@ export async function getStats(userId, { tz }) {
     listUpcomingInterviews(userId, 7),
   ]);
   const total = Object.values(countsByStatus).reduce((sum, n) => sum + n, 0);
-  return { countsByStatus, total, applicationsPerWeek: perWeek, responseRate: rate, upcomingInterviews };
+  return {
+    countsByStatus,
+    total,
+    applicationsPerWeek: perWeek,
+    responseRate: rate,
+    upcomingInterviews,
+  };
 }

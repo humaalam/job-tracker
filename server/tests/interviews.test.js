@@ -41,7 +41,9 @@ describe('auth required', () => {
 
 describe('POST /api/applications/:id/interviews', () => {
   it('creates an interview with defaults', async () => {
-    const res = await agent.post(`/api/applications/${application.id}/interviews`).send(newInterview);
+    const res = await agent
+      .post(`/api/applications/${application.id}/interviews`)
+      .send(newInterview);
 
     expect(res.status).toBe(201);
     expect(res.body.interview).toMatchObject({
@@ -53,7 +55,10 @@ describe('POST /api/applications/:id/interviews', () => {
   });
 
   it('stores a time given with an offset as the same moment in UTC', async () => {
-    const interview = await addInterview({ type: 'TECHNICAL', scheduledAt: '2026-11-03T17:00:00+02:00' });
+    const interview = await addInterview({
+      type: 'TECHNICAL',
+      scheduledAt: '2026-11-03T17:00:00+02:00',
+    });
 
     expect(interview.scheduledAt).toBe('2026-11-03T15:00:00.000Z');
   });
@@ -106,7 +111,11 @@ describe('PATCH /api/interviews/:interviewId', () => {
     const res = await agent.patch(`/api/interviews/${created.id}`).send({ outcome: 'PASSED' });
 
     expect(res.status).toBe(200);
-    expect(res.body.interview).toMatchObject({ ...newInterview, outcome: 'PASSED', notes: 'Bring portfolio' });
+    expect(res.body.interview).toMatchObject({
+      ...newInterview,
+      outcome: 'PASSED',
+      notes: 'Bring portfolio',
+    });
   });
 
   it('returns 400 for an empty body or an unknown outcome', async () => {
@@ -124,7 +133,9 @@ describe('PATCH /api/interviews/:interviewId', () => {
     const created = await addInterview();
     const otherApp = await createAs(agent, { company: 'Initech', roleTitle: 'Developer' });
 
-    const res = await agent.patch(`/api/interviews/${created.id}`).send({ notes: 'x', applicationId: otherApp.id });
+    const res = await agent
+      .patch(`/api/interviews/${created.id}`)
+      .send({ notes: 'x', applicationId: otherApp.id });
 
     expect(res.body.interview.applicationId).toBe(application.id);
   });
@@ -209,19 +220,28 @@ describe("ownership: Bob can't reach Alice's interviews", () => {
   let aliceInterview;
   let bobAgent;
   beforeEach(async () => {
-    aliceInterview = await addInterview({ ...newInterview, scheduledAt: inDays(1), notes: 'original' });
+    aliceInterview = await addInterview({
+      ...newInterview,
+      scheduledAt: inDays(1),
+      notes: 'original',
+    });
     bobAgent = await registeredAgent(bob);
   });
 
   it('cannot list or add interviews on her application', async () => {
     await bobAgent.get(`/api/applications/${application.id}/interviews`).expect(404);
-    await bobAgent.post(`/api/applications/${application.id}/interviews`).send(newInterview).expect(404);
+    await bobAgent
+      .post(`/api/applications/${application.id}/interviews`)
+      .send(newInterview)
+      .expect(404);
 
     expect(await prisma.interview.count()).toBe(1);
   });
 
   it('gets the same 404 as for an interview that does not exist', async () => {
-    const res = await bobAgent.patch(`/api/interviews/${aliceInterview.id}`).send({ notes: 'hacked' });
+    const res = await bobAgent
+      .patch(`/api/interviews/${aliceInterview.id}`)
+      .send({ notes: 'hacked' });
     const missing = await bobAgent.patch(`/api/interviews/${UNKNOWN_ID}`).send({ notes: 'hacked' });
 
     expect(res.status).toBe(404);

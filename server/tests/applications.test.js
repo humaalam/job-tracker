@@ -46,14 +46,18 @@ describe('POST /api/applications', () => {
   });
 
   it('sets appliedAt when created as APPLIED', async () => {
-    const res = await agent.post('/api/applications').send({ ...newApplication, status: 'APPLIED' });
+    const res = await agent
+      .post('/api/applications')
+      .send({ ...newApplication, status: 'APPLIED' });
 
     expect(res.status).toBe(201);
     expect(res.body.application.appliedAt).not.toBeNull();
   });
 
   it('ignores a userId in the body and uses the logged-in user', async () => {
-    const other = await prisma.user.create({ data: { email: 'x@example.com', name: 'X', passwordHash: 'x' } });
+    const other = await prisma.user.create({
+      data: { email: 'x@example.com', name: 'X', passwordHash: 'x' },
+    });
 
     const res = await agent.post('/api/applications').send({ ...newApplication, userId: other.id });
 
@@ -128,7 +132,6 @@ describe('GET /api/applications/:id', () => {
     expect(res.status).toBe(404);
     expect(res.body.error.message).toBe('Application not found');
   });
-
 });
 
 describe('PATCH /api/applications/:id', () => {
@@ -169,7 +172,11 @@ describe('PATCH /api/applications/:id', () => {
   });
 
   it('returns 400 when the new salaryMin is above the saved salaryMax', async () => {
-    const created = await createAs(agent, { ...newApplication, salaryMin: 80000, salaryMax: 100000 });
+    const created = await createAs(agent, {
+      ...newApplication,
+      salaryMin: 80000,
+      salaryMax: 100000,
+    });
 
     const res = await agent.patch(`/api/applications/${created.id}`).send({ salaryMin: 150000 });
 

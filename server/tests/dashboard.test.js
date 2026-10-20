@@ -26,8 +26,15 @@ async function createWithHistory(statuses, as = agent) {
 
 // Creates an application that was applied to at the given moment.
 async function appliedAt(isoDate, as = agent) {
-  const created = await createAs(as, { company: 'Globex', roleTitle: 'Engineer', status: 'APPLIED' });
-  await prisma.application.update({ where: { id: created.id }, data: { appliedAt: new Date(isoDate) } });
+  const created = await createAs(as, {
+    company: 'Globex',
+    roleTitle: 'Engineer',
+    status: 'APPLIED',
+  });
+  await prisma.application.update({
+    where: { id: created.id },
+    data: { appliedAt: new Date(isoDate) },
+  });
 }
 
 it('returns 401 without a cookie', async () => {
@@ -38,7 +45,14 @@ it('returns empty stats for a new user', async () => {
   const { body } = await getStats();
 
   expect(body).toMatchObject({
-    countsByStatus: { WISHLIST: 0, APPLIED: 0, INTERVIEWING: 0, OFFER: 0, REJECTED: 0, WITHDRAWN: 0 },
+    countsByStatus: {
+      WISHLIST: 0,
+      APPLIED: 0,
+      INTERVIEWING: 0,
+      OFFER: 0,
+      REJECTED: 0,
+      WITHDRAWN: 0,
+    },
     total: 0,
     responseRate: null,
     upcomingInterviews: [],
@@ -112,7 +126,8 @@ describe('applicationsPerWeek', () => {
   });
 
   // { weekStart: count } for the weeks that have applications.
-  const nonEmpty = (weeks) => Object.fromEntries(weeks.filter((w) => w.count > 0).map((w) => [w.weekStart, w.count]));
+  const nonEmpty = (weeks) =>
+    Object.fromEntries(weeks.filter((w) => w.count > 0).map((w) => [w.weekStart, w.count]));
 
   it('returns 12 Monday-based weeks in UTC, oldest first', async () => {
     const { body } = await getStats();
@@ -128,7 +143,11 @@ describe('applicationsPerWeek', () => {
     const { body } = await getStats('?tz=America/New_York');
 
     expect(body.applicationsPerWeek[11].weekStart).toBe('2026-10-19');
-    expect(nonEmpty(body.applicationsPerWeek)).toEqual({ '2026-08-03': 1, '2026-10-12': 2, '2026-10-19': 1 });
+    expect(nonEmpty(body.applicationsPerWeek)).toEqual({
+      '2026-08-03': 1,
+      '2026-10-12': 2,
+      '2026-10-19': 1,
+    });
   });
 
   it.each(['Mars/Olympus', '+05:00', "UTC'; DROP TABLE"])('returns 400 for tz=%s', async (tz) => {
@@ -151,6 +170,9 @@ describe('upcomingInterviews', () => {
     const { body } = await getStats();
 
     expect(body.upcomingInterviews).toHaveLength(1);
-    expect(body.upcomingInterviews[0]).toMatchObject({ type: 'TECHNICAL', application: { id: created.id } });
+    expect(body.upcomingInterviews[0]).toMatchObject({
+      type: 'TECHNICAL',
+      application: { id: created.id },
+    });
   });
 });

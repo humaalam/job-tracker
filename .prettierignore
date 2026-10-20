@@ -1,0 +1,5 @@
+# Generated or built files (Prettier already skips node_modules)
+dist/
+server/src/generated/
+server/prisma/migrations/
+package-lock.json

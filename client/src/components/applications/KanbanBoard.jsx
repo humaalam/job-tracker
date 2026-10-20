@@ -11,6 +11,7 @@ import {
 import { useState } from 'react';
 import { useChangeApplicationStatus } from '../../hooks/useApplicationMutations.js';
 import { STATUS_LABELS } from '../../lib/format.js';
+import ErrorMessage from '../ui/ErrorMessage.jsx';
 import ApplicationCard from './ApplicationCard.jsx';
 
 const handleClass =
@@ -156,9 +157,9 @@ export default function KanbanBoard({ statuses, applications }) {
       onDragCancel={() => setActiveApplication(null)}
     >
       {changeStatus.isError && (
-        <p role="alert" className="mb-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
-          Couldn't move the card: {changeStatus.error.message}
-        </p>
+        <ErrorMessage className="mb-3">
+          Couldn&apos;t move the card: {changeStatus.error.message}
+        </ErrorMessage>
       )}
 
       {/* Six columns don't fit on small screens, so the board scrolls sideways. */}

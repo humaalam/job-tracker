@@ -5,7 +5,13 @@ import { describe, expect, it, vi } from 'vitest';
 import FilterBar from '../components/applications/FilterBar.jsx';
 import { DEFAULT_ORDER, DEFAULT_SORT } from '../lib/applicationFilters.js';
 
-const NO_FILTERS = { status: [], workMode: [], search: '', sort: DEFAULT_SORT, order: DEFAULT_ORDER };
+const NO_FILTERS = {
+  status: [],
+  workMode: [],
+  search: '',
+  sort: DEFAULT_SORT,
+  order: DEFAULT_ORDER,
+};
 
 // FilterBar is controlled: the page keeps the filters and passes them in.
 // This harness plays the page's part, applying each change to its state,
@@ -78,7 +84,11 @@ describe('FilterBar', () => {
   });
 
   it('shows "Clear filters" only while something is filtered, and it resets the filters', async () => {
-    const { onChange, user } = renderFilterBar({ status: ['APPLIED'], search: 'acme', sort: 'company' });
+    const { onChange, user } = renderFilterBar({
+      status: ['APPLIED'],
+      search: 'acme',
+      sort: 'company',
+    });
 
     await user.click(screen.getByRole('button', { name: 'Clear filters' }));
 

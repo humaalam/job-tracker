@@ -18,7 +18,9 @@ describe('toCsv', () => {
   });
 
   it('writes dates as ISO timestamps', () => {
-    expect(csvOf({ name: new Date('2026-10-20T09:00:00Z') })).toContain('2026-10-20T09:00:00.000Z,');
+    expect(csvOf({ name: new Date('2026-10-20T09:00:00Z') })).toContain(
+      '2026-10-20T09:00:00.000Z,',
+    );
   });
 
   it.each([

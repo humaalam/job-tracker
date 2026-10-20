@@ -1,6 +1,7 @@
 import { Navigate, Outlet, useLocation } from 'react-router';
 import { useAuth } from '../../context/AuthContext.jsx';
 import FullPageMessage from '../ui/FullPageMessage.jsx';
+import LoadingMessage from '../ui/LoadingMessage.jsx';
 
 // Wraps the login and register pages: a centred card, only for logged-out users.
 export default function GuestLayout() {
@@ -8,7 +9,11 @@ export default function GuestLayout() {
   const location = useLocation();
 
   if (isLoading) {
-    return <FullPageMessage>Loading…</FullPageMessage>;
+    return (
+      <FullPageMessage>
+        <LoadingMessage />
+      </FullPageMessage>
+    );
   }
   // Logged in (already, or just now): go to the page ProtectedRoute sent them
   // away from, or to the dashboard.

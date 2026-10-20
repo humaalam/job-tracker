@@ -3,6 +3,7 @@ import { STATUSES, WORK_MODES } from '../../lib/applicationFilters.js';
 import { STATUS_LABELS, WORK_MODE_LABELS } from '../../lib/format.js';
 import Button from '../ui/Button.jsx';
 import TextField from '../ui/TextField.jsx';
+import ErrorMessage from '../ui/ErrorMessage.jsx';
 
 // Every field the form edits. Inputs always hold text, so every value is a string.
 const EMPTY_VALUES = {
@@ -72,11 +73,7 @@ export default function ApplicationForm({ application, onSubmit, onCancel, isSav
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {error && !hasFieldErrors && (
-        <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
-          {error.message}
-        </p>
-      )}
+      {error && !hasFieldErrors && <ErrorMessage>{error.message}</ErrorMessage>}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <TextField label="Company *" required maxLength={200} {...field('company')} />

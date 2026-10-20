@@ -63,7 +63,13 @@ describe('ApplicationForm', () => {
 
   it('starts with the values of the application being edited', () => {
     renderForm({
-      application: { company: 'Globex', roleTitle: 'Engineer', status: 'OFFER', salaryMax: 90000, notes: null },
+      application: {
+        company: 'Globex',
+        roleTitle: 'Engineer',
+        status: 'OFFER',
+        salaryMax: 90000,
+        notes: null,
+      },
     });
 
     expect(screen.getByLabelText('Company *')).toHaveValue('Globex');
@@ -82,7 +88,9 @@ describe('ApplicationForm', () => {
 
     const jobUrl = screen.getByLabelText('Job URL');
     expect(jobUrl).toHaveAttribute('aria-invalid', 'true');
-    expect(jobUrl).toHaveAccessibleDescription('Use a web address starting with http:// or https://');
+    expect(jobUrl).toHaveAccessibleDescription(
+      'Use a web address starting with http:// or https://',
+    );
     // Field errors replace the general message at the top.
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });

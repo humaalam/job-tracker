@@ -47,7 +47,12 @@ export default function ContactList({ contacts, onEdit, onDelete }) {
             {/* The server only accepts http(s), but older data may differ: check again. */}
             {isWebUrl(contact.linkedinUrl) && (
               <p>
-                <a href={contact.linkedinUrl} target="_blank" rel="noreferrer" className={linkClass}>
+                <a
+                  href={contact.linkedinUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={linkClass}
+                >
                   LinkedIn profile
                 </a>
               </p>

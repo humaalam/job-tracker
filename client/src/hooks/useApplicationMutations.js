@@ -55,13 +55,15 @@ export function useChangeApplicationStatus() {
       await queryClient.cancelQueries(lists);
       // Snapshot of every cached list, to roll back on error.
       const previousLists = queryClient.getQueriesData(lists);
-      queryClient.setQueriesData(lists, (old) =>
-        old && {
-          ...old,
-          applications: old.applications.map((application) =>
-            application.id === id ? { ...application, status } : application,
-          ),
-        },
+      queryClient.setQueriesData(
+        lists,
+        (old) =>
+          old && {
+            ...old,
+            applications: old.applications.map((application) =>
+              application.id === id ? { ...application, status } : application,
+            ),
+          },
       );
       // Whatever we return here is passed to onError as `context`.
       return { previousLists };

@@ -41,6 +41,8 @@ npm test -w server     # server tests (Vitest); migrates jobtracker_test first (
 npm run test:watch -w server                        # re-run tests on file change
 npm test -w client     # component tests (Vitest + jsdom + React Testing Library), no server or DB needed
 npx vitest run src/test/FilterBar.test.jsx          # (from client/) run one test file; add -t "<name>" for one test
+npm run lint           # ESLint for the whole repo (eslint.config.js); lint:fix to auto-fix
+npm run format         # Prettier for the whole repo (.prettierrc.json); format:check only checks
 ```
 
 Run a command in one workspace with `-w server` / `-w client` (e.g. `npm install express -w server`).

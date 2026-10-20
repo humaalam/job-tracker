@@ -38,7 +38,14 @@ function BoardFromList() {
 
 const COLUMN = 'section[aria-labelledby^="kanban-column-"]';
 const box = (left, top, width, height) => ({
-  left, top, width, height, right: left + width, bottom: top + height, x: left, y: top,
+  left,
+  top,
+  width,
+  height,
+  right: left + width,
+  bottom: top + height,
+  x: left,
+  y: top,
 });
 
 // jsdom doesn't lay out the page: every element measures 0×0 at the top left.
@@ -50,7 +57,8 @@ function fakeLayout() {
     // it as the dragged card, so it starts where the picked-up card is
     // (dnd-kit marks that card's handle with aria-pressed="true").
     const pickedUpHandle = document.querySelector('button[aria-pressed="true"]');
-    const column = this.closest(COLUMN) ?? (this.tagName === 'ARTICLE' && pickedUpHandle?.closest(COLUMN));
+    const column =
+      this.closest(COLUMN) ?? (this.tagName === 'ARTICLE' && pickedUpHandle?.closest(COLUMN));
     if (!column) return box(0, 0, 0, 0);
 
     const status = column.getAttribute('aria-labelledby').replace('kanban-column-', '');
@@ -128,9 +136,7 @@ describe('KanbanBoard status change', () => {
     renderWithProviders(<BoardFromList />);
     await screen.findByRole('button', { name: 'Move Acme' });
     let answerRefetch;
-    listApplications.mockImplementation(
-      () => new Promise((resolve) => (answerRefetch = resolve)),
-    );
+    listApplications.mockImplementation(() => new Promise((resolve) => (answerRefetch = resolve)));
 
     await moveRight(user, 'Acme');
     expect(await column('Applied').findByText('Acme')).toBeInTheDocument();
@@ -161,7 +167,9 @@ describe('KanbanBoard status change', () => {
     await user.keyboard('[Space]');
 
     // dnd-kit's screen reader message confirms it really landed on its own column.
-    expect(screen.getByRole('status')).toHaveTextContent('Acme was dropped in the Wishlist column.');
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Acme was dropped in the Wishlist column.',
+    );
     expect(changeApplicationStatus).not.toHaveBeenCalled();
     expect(column('Wishlist').getByText('Acme')).toBeInTheDocument();
   });

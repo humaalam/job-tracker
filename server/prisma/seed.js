@@ -25,7 +25,13 @@ const applications = [
     roleTitle: 'Full-Stack Engineer',
     startedDaysAgo: 10,
     path: ['WISHLIST', 'APPLIED'],
-    details: { workMode: 'HYBRID', location: 'Chicago, IL', salaryMin: 90000, salaryMax: 110000, resumeVersion: 'v2-fullstack' },
+    details: {
+      workMode: 'HYBRID',
+      location: 'Chicago, IL',
+      salaryMin: 90000,
+      salaryMax: 110000,
+      resumeVersion: 'v2-fullstack',
+    },
   },
   {
     company: 'Initech',
@@ -42,10 +48,23 @@ const applications = [
       notes: 'Team uses Express + Postgres. Ask about on-call.',
     },
     interviews: [
-      { type: 'PHONE_SCREEN', inDays: -5, durationMinutes: 30, outcome: 'PASSED', interviewers: 'Priya Shah' },
-      { type: 'TECHNICAL', inDays: 2, durationMinutes: 60, locationOrLink: 'https://example.com/meet/initech' },
+      {
+        type: 'PHONE_SCREEN',
+        inDays: -5,
+        durationMinutes: 30,
+        outcome: 'PASSED',
+        interviewers: 'Priya Shah',
+      },
+      {
+        type: 'TECHNICAL',
+        inDays: 2,
+        durationMinutes: 60,
+        locationOrLink: 'https://example.com/meet/initech',
+      },
     ],
-    contacts: [{ name: 'Priya Shah', title: 'Technical Recruiter', email: 'priya.shah@example.com' }],
+    contacts: [
+      { name: 'Priya Shah', title: 'Technical Recruiter', email: 'priya.shah@example.com' },
+    ],
   },
   {
     company: 'Umbrella Health',
@@ -55,20 +74,42 @@ const applications = [
     details: { workMode: 'ONSITE', location: 'Boston, MA', salaryMin: 100000, salaryMax: 125000 },
     interviews: [
       { type: 'PHONE_SCREEN', inDays: -12, durationMinutes: 30, outcome: 'PASSED' },
-      { type: 'BEHAVIORAL', inDays: 5, durationMinutes: 45, locationOrLink: 'Umbrella HQ, 4th floor' },
+      {
+        type: 'BEHAVIORAL',
+        inDays: 5,
+        durationMinutes: 45,
+        locationOrLink: 'Umbrella HQ, 4th floor',
+      },
       { type: 'TAKE_HOME', inDays: 12, notes: 'Due date for the take-home project.' },
     ],
-    contacts: [{ name: 'Marcus Lee', title: 'Hiring Manager', linkedinUrl: 'https://www.linkedin.com/in/example-marcus' }],
+    contacts: [
+      {
+        name: 'Marcus Lee',
+        title: 'Hiring Manager',
+        linkedinUrl: 'https://www.linkedin.com/in/example-marcus',
+      },
+    ],
   },
   {
     company: 'Stark Industries',
     roleTitle: 'React Developer',
     startedDaysAgo: 45,
     path: ['APPLIED', 'INTERVIEWING', 'OFFER'],
-    details: { workMode: 'REMOTE', salaryMin: 115000, salaryMax: 130000, notes: 'Offer received. Decide by end of month.' },
+    details: {
+      workMode: 'REMOTE',
+      salaryMin: 115000,
+      salaryMax: 130000,
+      notes: 'Offer received. Decide by end of month.',
+    },
     interviews: [
       { type: 'TECHNICAL', inDays: -25, durationMinutes: 90, outcome: 'PASSED' },
-      { type: 'FINAL', inDays: -18, durationMinutes: 120, outcome: 'PASSED', interviewers: 'Elena Rossi, CTO' },
+      {
+        type: 'FINAL',
+        inDays: -18,
+        durationMinutes: 120,
+        outcome: 'PASSED',
+        interviewers: 'Elena Rossi, CTO',
+      },
     ],
     contacts: [
       { name: 'Elena Rossi', title: 'Engineering Manager', email: 'elena.rossi@example.com' },
@@ -87,10 +128,21 @@ const applications = [
     roleTitle: 'Platform Engineer',
     startedDaysAgo: 50,
     path: ['APPLIED', 'INTERVIEWING', 'REJECTED'],
-    details: { workMode: 'HYBRID', location: 'Palo Alto, CA', salaryMin: 130000, salaryMax: 160000 },
+    details: {
+      workMode: 'HYBRID',
+      location: 'Palo Alto, CA',
+      salaryMin: 130000,
+      salaryMax: 160000,
+    },
     interviews: [
       { type: 'PHONE_SCREEN', inDays: -30, durationMinutes: 30, outcome: 'PASSED' },
-      { type: 'TECHNICAL', inDays: -22, durationMinutes: 60, outcome: 'FAILED', notes: 'System design round; review caching.' },
+      {
+        type: 'TECHNICAL',
+        inDays: -22,
+        durationMinutes: 60,
+        outcome: 'FAILED',
+        notes: 'System design round; review caching.',
+      },
     ],
   },
   {
@@ -173,7 +225,9 @@ async function main() {
     });
   }
 
-  console.log(`Seeded ${applications.length} applications for ${DEMO_EMAIL} (password: ${DEMO_PASSWORD})`);
+  console.log(
+    `Seeded ${applications.length} applications for ${DEMO_EMAIL} (password: ${DEMO_PASSWORD})`,
+  );
 }
 
 try {

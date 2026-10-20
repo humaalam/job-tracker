@@ -12,6 +12,8 @@ beforeEach(async () => {
 });
 afterAll(() => prisma.$disconnect());
 
+const UTF8_BOM = String.fromCharCode(0xfeff);
+
 const HEADER =
   'Company,Role,Status,Applied at,Location,Work mode,Salary min,Salary max,Currency,' +
   'Job URL,Resume version,Cover letter version,Notes,Created at,Updated at';
@@ -19,7 +21,7 @@ const HEADER =
 // Downloads the CSV and splits it into lines (without the BOM and the final empty line).
 async function exportCsv(query = '') {
   const res = await agent.get(`/api/applications/export.csv${query}`).expect(200);
-  const lines = res.text.replace(/^﻿/, '').split('\r\n').slice(0, -1);
+  const lines = res.text.replace(UTF8_BOM, '').split('\r\n').slice(0, -1);
   return { res, lines };
 }
 
@@ -32,8 +34,10 @@ it('downloads a UTF-8 CSV file named after today', async () => {
 
   expect(res.headers['content-type']).toBe('text/csv; charset=utf-8');
   // Express only adds quotes around the filename when it needs them.
-  expect(res.headers['content-disposition']).toMatch(/^attachment; filename="?applications-\d{4}-\d{2}-\d{2}\.csv"?$/);
-  expect(res.text.startsWith('﻿')).toBe(true);
+  expect(res.headers['content-disposition']).toMatch(
+    /^attachment; filename="?applications-\d{4}-\d{2}-\d{2}\.csv"?$/,
+  );
+  expect(res.text.startsWith(UTF8_BOM)).toBe(true);
 });
 
 it('has only the header row when there are no applications', async () => {
@@ -94,7 +98,11 @@ it("exports only my applications, not Bob's", async () => {
 describe('filters and sorting', () => {
   beforeEach(async () => {
     await createAs(agent, { company: 'Acme', roleTitle: 'Frontend Developer', status: 'APPLIED' });
-    await createAs(agent, { company: 'Initech', roleTitle: 'Backend Developer', status: 'WISHLIST' });
+    await createAs(agent, {
+      company: 'Initech',
+      roleTitle: 'Backend Developer',
+      status: 'WISHLIST',
+    });
     await createAs(agent, { company: 'Hooli', roleTitle: 'Platform Engineer', status: 'APPLIED' });
   });
 
@@ -123,7 +131,11 @@ describe('filters and sorting', () => {
 it('is not paginated: exports every application, ignoring page and limit', async () => {
   const user = await prisma.user.findFirst();
   await prisma.application.createMany({
-    data: Array.from({ length: 25 }, (_, i) => ({ userId: user.id, company: `Company ${i}`, roleTitle: 'Dev' })),
+    data: Array.from({ length: 25 }, (_, i) => ({
+      userId: user.id,
+      company: `Company ${i}`,
+      roleTitle: 'Dev',
+    })),
   });
 
   const { lines } = await exportCsv('?page=2&limit=5');
