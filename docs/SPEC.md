@@ -64,6 +64,8 @@ The app lets users sign up, track job applications through a fixed status pipeli
 | **@dnd-kit** | A drag-and-drop library for React. | It powers the Kanban board. | react-beautiful-dnd (now unmaintained) / pragmatic-drag-and-drop |
 | **Recharts** | A charting library for React. | It draws the "applications per week" chart on the dashboard. | Chart.js |
 
+> **Decision (Phase 6, Step 1):** We use Vite 8, React 19 and Tailwind CSS 4. Tailwind 4 plugs into Vite through `@tailwindcss/vite` and is switched on by a single `@import 'tailwindcss';` line in `src/index.css`. It needs no `tailwind.config.js` or PostCSS config, because it finds the class names in our files by itself. The client was written by hand instead of with `npm create vite`, so it contains no demo files.
+
 ### Testing & tooling
 | Technology | What it is | Why we use it | One alternative |
 |---|---|---|---|

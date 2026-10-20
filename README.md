@@ -42,7 +42,16 @@ Browse the database at http://localhost:8080 (Adminer). Log in with:
 
 The init scripts in `docker/postgres/init/` only run on a **fresh** volume. To re-run them, reset the database with `docker compose down -v`. This deletes all local data.
 
-_More steps (migrations, running the apps) will be added as the project grows._
+### Running the app
+
+Run these in two terminals:
+
+```bash
+npm run dev:server   # API on http://localhost:4000
+npm run dev:client   # React app on http://localhost:5173
+```
+
+Open http://localhost:5173. The Vite dev server forwards every `/api` request to the API on port 4000, so the browser only ever talks to one address.
 
 ## Scripts
 
@@ -54,7 +63,8 @@ _More steps (migrations, running the apps) will be added as the project grows._
 | `npm run db:seed -w server` | Reset the demo account's data (`demo@example.com` / `password123`) |
 | `npm run db:studio -w server` | Open Prisma Studio (browse/edit data) at http://localhost:5555 |
 | `npm run dev:server` | Start the API in watch mode |
-| `npm run dev:client` | Start the React dev server |
+| `npm run dev:client` | Start the React dev server at http://localhost:5173 (proxies `/api` to the API) |
+| `npm run build -w client` | Build the React app for production into `client/dist` |
 | `npm test` | Run tests in all workspaces |
 
 ## Deployment

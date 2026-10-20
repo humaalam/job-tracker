@@ -34,7 +34,8 @@ npm run db:generate -w server                       # regenerate the Prisma clie
 npm run db:studio -w server                         # Prisma Studio at http://localhost:5555
 npm run db:seed -w server                           # re-runnable; resets only demo@example.com / password123
 npm run dev:server     # API on http://localhost:4000 (node --watch)
-npm run dev:client     # run in client workspace (client package not created yet)
+npm run dev:client     # React app on http://localhost:5173 (Vite); /api is proxied to :4000, so run dev:server too
+npm run build -w client                             # production build into client/dist (gitignored)
 npm test               # tests in all workspaces
 npm test -w server     # server tests (Vitest); migrates jobtracker_test first (tests/globalSetup.js)
 npm run test:watch -w server                        # re-run tests on file change
