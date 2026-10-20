@@ -4,15 +4,7 @@ import jwt from 'jsonwebtoken';
 import { app } from '../src/app.js';
 import { config } from '../src/config/env.js';
 import { resetDb, prisma } from './helpers/db.js';
-
-const alice = { email: 'alice@example.com', password: 'password123', name: 'Alice' };
-
-// Registers a user with an agent: a client that keeps cookies between requests, like a browser.
-async function registeredAgent(user = alice) {
-  const agent = request.agent(app);
-  await agent.post('/api/auth/register').send(user).expect(201);
-  return agent;
-}
+import { alice, registeredAgent } from './helpers/auth.js';
 
 // Returns the "token=..." Set-Cookie header, if the response has one.
 function tokenCookie(res) {
