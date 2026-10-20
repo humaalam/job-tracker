@@ -1,7 +1,11 @@
 import { Router } from 'express';
 import { validate } from '../middleware/validate.js';
 import { requireAuth } from '../middleware/requireAuth.js';
-import { createApplicationSchema, updateApplicationSchema } from '../validators/applications.js';
+import {
+  createApplicationSchema,
+  updateApplicationSchema,
+  statusSchema,
+} from '../validators/applications.js';
 import * as applicationController from '../controllers/applicationController.js';
 
 export const applicationsRouter = Router();
@@ -14,3 +18,5 @@ applicationsRouter.get('/', applicationController.list);
 applicationsRouter.get('/:id', applicationController.getOne);
 applicationsRouter.patch('/:id', validate(updateApplicationSchema), applicationController.update);
 applicationsRouter.delete('/:id', applicationController.remove);
+applicationsRouter.patch('/:id/status', validate(statusSchema), applicationController.changeStatus);
+applicationsRouter.get('/:id/history', applicationController.history);

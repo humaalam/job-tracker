@@ -224,7 +224,7 @@ Request flow: **route → middleware (auth, validate) → controller → service
 - `GET /applications/export.csv`: accepts the same filters as the list
 - `GET /applications/:id`: includes contacts, interviews, and history
 - `PATCH /applications/:id`
-- `PATCH /applications/:id/status`: `{ status }`, used by the Kanban board; logs history
+- `PATCH /applications/:id/status`: `{ status }`, used by the Kanban board; logs history (same status = no new entry; 409 if another request changed the status at the same moment)
 - `DELETE /applications/:id`
 - `GET /applications/:id/history`
 

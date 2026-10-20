@@ -46,8 +46,14 @@ export const createApplicationSchema = applicationFields
   .refine(...checkSalaryRange);
 
 // PATCH: every field is optional, but at least one must be sent.
-// Status is changed through the status-change service (Phase 3 step 3), not here.
+// A status here is passed to the status-change service, like PATCH /:id/status.
 export const updateApplicationSchema = applicationFields
+  .extend({ status: z.enum(STATUSES) })
   .partial()
   .refine((d) => Object.keys(d).length > 0, { message: 'Send at least one field to update' })
   .refine(...checkSalaryRange);
+
+// PATCH /:id/status (used by the Kanban board).
+export const statusSchema = z.object({
+  status: z.enum(STATUSES, { error: `Status must be one of: ${STATUSES.join(', ')}` }),
+});

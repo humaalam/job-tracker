@@ -3,15 +3,7 @@ import request from 'supertest';
 import { app } from '../src/app.js';
 import { resetDb, prisma } from './helpers/db.js';
 import { bob, registeredAgent } from './helpers/auth.js';
-
-const newApplication = { company: 'Globex', roleTitle: 'Full-Stack Engineer' };
-const UNKNOWN_ID = '00000000-0000-0000-0000-000000000000';
-
-// Creates an application as the given agent and returns it.
-async function createAs(someAgent, data = newApplication) {
-  const res = await someAgent.post('/api/applications').send(data).expect(201);
-  return res.body.application;
-}
+import { newApplication, UNKNOWN_ID, createAs } from './helpers/applications.js';
 
 let agent;
 beforeEach(async () => {

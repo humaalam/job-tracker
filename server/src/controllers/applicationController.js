@@ -21,6 +21,16 @@ export async function update(req, res) {
   res.json({ application });
 }
 
+export async function changeStatus(req, res) {
+  const application = await applicationService.changeStatus(req.userId, req.params.id, req.body.status);
+  res.json({ application });
+}
+
+export async function history(req, res) {
+  const history = await applicationService.getStatusHistory(req.userId, req.params.id);
+  res.json({ history });
+}
+
 // 204 No Content: it worked, and there is nothing to send back.
 export async function remove(req, res) {
   await applicationService.deleteApplication(req.userId, req.params.id);
