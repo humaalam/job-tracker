@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 import { authRouter } from './routes/auth.js';
 import { applicationsRouter } from './routes/applications.js';
 import { interviewsRouter } from './routes/interviews.js';
+import { contactsRouter } from './routes/contacts.js';
 import { notFound } from './middleware/notFound.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
@@ -21,6 +22,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRouter);
 app.use('/api/applications', applicationsRouter);
 app.use('/api/interviews', interviewsRouter);
+app.use('/api/contacts', contactsRouter);
 
 // Order matters: routes first, then 404 for anything unmatched, then errors.
 app.use(notFound);

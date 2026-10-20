@@ -237,8 +237,9 @@ Request flow: **route → middleware (auth, validate) → controller → service
 - `scheduledAt` must be an ISO date-time **with a timezone** (`2026-11-03T15:00:00Z` or `...+02:00`); it is stored and returned in UTC.
 
 **Contacts**
-- `GET` / `POST /applications/:id/contacts`
+- `GET` / `POST /applications/:id/contacts`: list (oldest first) / create; returns `{ contacts }` / `{ contact }`
 - `PATCH` / `DELETE /contacts/:contactId`
+- `email` is trimmed and lowercased; `linkedinUrl` must be a valid URL (any site); `phone` is free text (max 50 characters).
 
 **Dashboard**
 - `GET /dashboard/stats` returns `{ countsByStatus, total, applicationsPerWeek (last 12 weeks), responseRate, upcomingInterviews }`
