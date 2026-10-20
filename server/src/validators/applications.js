@@ -60,7 +60,7 @@ const commaList = (values) =>
 
 export const SORT_FIELDS = ['updatedAt', 'createdAt', 'appliedAt', 'company', 'roleTitle', 'status', 'salaryMax'];
 
-// GET /applications (and later the CSV export, which takes the same filters).
+// GET /applications (the CSV export below takes the same filters).
 export const listQuerySchema = z.object({
   status: commaList(STATUSES).optional(),
   workMode: commaList(WORK_MODES).optional(),
@@ -71,6 +71,10 @@ export const listQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
 });
+
+// GET /applications/export.csv: the same filters and sorting, but no paging
+// (page and limit are dropped like any unknown field).
+export const exportQuerySchema = listQuerySchema.omit({ page: true, limit: true });
 
 // PATCH /:id/status (used by the Kanban board).
 export const statusSchema = z.object({

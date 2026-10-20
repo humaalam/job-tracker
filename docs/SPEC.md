@@ -223,7 +223,10 @@ Request flow: **route → middleware (auth, validate) → controller → service
   - details: `status` and `workMode` take one value or a comma-separated list (`?status=APPLIED,INTERVIEWING`); `search` matches company, role title or location (case-insensitive); `sort` is one of `updatedAt` (default), `createdAt`, `appliedAt`, `company`, `roleTitle`, `status`, `salaryMax`, and `order` is `asc` or `desc` (default); `limit` defaults to 20, max 100
   - returns `{ applications, pagination: { page, limit, total, totalPages } }`
 - `POST /applications`: also logs the initial status
-- `GET /applications/export.csv`: accepts the same filters as the list
+- `GET /applications/export.csv`: accepts the same filters and sorting as the list, but is not paginated (every match is exported)
+  - downloads as `applications-YYYY-MM-DD.csv`: UTF-8 with a BOM (so Excel reads accents correctly), CRLF line endings, fields quoted when needed
+  - columns: company, role, status, applied at, location, work mode, salary min/max, currency, job URL, resume and cover letter versions, notes, created at, updated at (no job description); dates are ISO timestamps in UTC
+  - text starting with `=`, `+`, `-`, `@` (or a tab or carriage return) gets a leading `'`, so a spreadsheet can't run it as a formula
 - `GET /applications/:id`: includes contacts, interviews, and history
 - `PATCH /applications/:id`
 - `PATCH /applications/:id/status`: `{ status }`, used by the Kanban board; logs history (same status = no new entry; 409 if another request changed the status at the same moment)

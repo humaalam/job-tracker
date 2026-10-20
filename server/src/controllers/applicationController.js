@@ -12,6 +12,17 @@ export async function list(req, res) {
   res.json({ applications, pagination });
 }
 
+export async function exportCsv(req, res) {
+  const csv = await applicationService.exportApplicationsCsv(req.userId, req.query);
+  const today = new Date().toISOString().slice(0, 10);
+  // Content-Disposition: attachment makes the browser download it as a file.
+  res.attachment(`applications-${today}.csv`);
+  res.type('text/csv');
+  // The BOM (an invisible first character) tells Excel the file is UTF-8,
+  // so names like "Zürich" don't come out garbled.
+  res.send(`﻿${csv}`);
+}
+
 export async function getOne(req, res) {
   const application = await applicationService.getApplication(req.userId, req.params.id);
   res.json({ application });

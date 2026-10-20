@@ -1,6 +1,7 @@
 import { prisma } from '../db/prisma.js';
 import { HttpError } from '../utils/httpError.js';
 import { isUuid } from '../utils/isUuid.js';
+import { toCsv } from '../utils/csv.js';
 import { salaryRangeOk, SALARY_RANGE_MESSAGE } from '../validators/applications.js';
 
 const notFound = () => new HttpError(404, 'Application not found');
@@ -67,7 +68,7 @@ export async function createApplication(userId, data) {
 }
 
 // Turns the list filters into a Prisma `where`. Always scoped to the user.
-// Exported so the CSV export (Phase 5) applies exactly the same filters.
+// The list and the CSV export both use it, so they always match.
 export function buildListWhere(userId, { status, workMode, search }) {
   const where = { userId };
   if (status) {
@@ -110,6 +111,35 @@ export async function listApplications(userId, query) {
     applications,
     pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
   };
+}
+
+// The CSV columns, in order. The long jobDescription and internal ids are
+// left out. Dates are written as ISO timestamps in UTC.
+const CSV_COLUMNS = [
+  { header: 'Company', key: 'company' },
+  { header: 'Role', key: 'roleTitle' },
+  { header: 'Status', key: 'status' },
+  { header: 'Applied at', key: 'appliedAt' },
+  { header: 'Location', key: 'location' },
+  { header: 'Work mode', key: 'workMode' },
+  { header: 'Salary min', key: 'salaryMin' },
+  { header: 'Salary max', key: 'salaryMax' },
+  { header: 'Currency', key: 'salaryCurrency' },
+  { header: 'Job URL', key: 'jobUrl' },
+  { header: 'Resume version', key: 'resumeVersion' },
+  { header: 'Cover letter version', key: 'coverLetterVersion' },
+  { header: 'Notes', key: 'notes' },
+  { header: 'Created at', key: 'createdAt' },
+  { header: 'Updated at', key: 'updatedAt' },
+];
+
+// Every matching application (no paging), as CSV text.
+export async function exportApplicationsCsv(userId, query) {
+  const applications = await prisma.application.findMany({
+    where: buildListWhere(userId, query),
+    orderBy: buildOrderBy(query),
+  });
+  return toCsv(CSV_COLUMNS, applications);
 }
 
 export async function getApplication(userId, id) {
