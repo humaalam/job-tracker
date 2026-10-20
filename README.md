@@ -125,6 +125,40 @@ There's one config for the whole repo: `eslint.config.js`, `.prettierrc.json` an
 - **Server tests fail to connect:** start the database (`npm run db:up`). If `jobtracker_test` is missing, the volume was created before the init script existed: run `docker compose down -v` (wipes local data), then `npm run db:up`.
 - **`Cannot find module '../generated/prisma/client.ts'`:** generate the Prisma client with `npm run db:generate -w server`.
 
+## Working with Claude Code
+
+This project is built step by step with [Claude Code](https://claude.com/claude-code), as a way to learn both the tool and the stack. The setup is deliberately small. Claude Code can be extended in several ways, and this table shows which ones the project uses:
+
+| Piece           | What it is                                                                                                           | In this project                                                                                                                                                                                  |
+| --------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **`CLAUDE.md`** | A file Claude Code reads at the start of every session: the project's standing instructions.                         | **Used.** See below.                                                                                                                                                                             |
+| **Auto memory** | Notes Claude Code keeps between sessions, stored per user in `~/.claude/projects/…/memory/`, outside the repo.       | **Used**, one note: work one step at a time and explain each one. It's personal to the machine and not shared through git.                                                                       |
+| **Skills**      | Packaged instructions for a kind of task, loaded when that task comes up (project skills live in `.claude/skills/`). | **No project skills.** Built-in skills were used now and then, e.g. a data-visualization skill guided the weekly chart (one color, thin bars, hover tooltip, a hidden table for screen readers). |
+| **Subagents**   | Separate helper agents with their own instructions and tools (`.claude/agents/`).                                    | **None.** Every step is done in one main session.                                                                                                                                                |
+| **Hooks**       | Commands the harness runs automatically on events, e.g. after every file edit (`.claude/settings.json`).             | **None.** Lint and formatting are run by hand (`npm run lint`, `npm run format`).                                                                                                                |
+| **MCP servers** | Connections to outside tools and data (`.mcp.json`).                                                                 | **None** configured for this repo.                                                                                                                                                               |
+
+There is no `.claude/` folder yet. `CLAUDE.md` is the only Claude Code file in the repo.
+
+### What `CLAUDE.md` contains
+
+- **The working agreement:**
+  - follow [docs/SPEC.md](docs/SPEC.md) one step at a time, in order
+  - explain every new or changed file in plain words, and name one alternative for each new concept
+  - end with a suggested commit message, then stop. The developer reviews and commits; Claude never commits.
+- **Decided stack and its fine print:**
+  - plain JavaScript, no TypeScript (except Prisma's generated client)
+  - Prisma pinned to 7.x
+  - the AWS target
+- **Every command:** database, migrations, dev servers, tests, lint and format.
+- **Environment rules:** one root `.env`, a separate test database, and how `server/src/config/env.js` loads it.
+- **Architecture rules that are easy to break by accident:**
+  - every query is scoped to the logged-in user (another user's data returns 404)
+  - every status change goes through one service function that also writes the history
+  - the client's `api/` → `hooks/` → components layering, and where auth state lives
+
+`docs/SPEC.md` is the source of truth for requirements. When a decision changes during a step, Claude records it there as a "Decision (Phase X, Step Y)" note, so the reasons stay next to the plan.
+
 ## Deployment
 
 _Coming in Phase 12 (AWS): Docker on EC2, RDS PostgreSQL, S3 + CloudFront._
