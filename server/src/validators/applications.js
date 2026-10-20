@@ -53,6 +53,28 @@ export const updateApplicationSchema = applicationFields
   .refine((d) => Object.keys(d).length > 0, { message: 'Send at least one field to update' })
   .refine(...checkSalaryRange);
 
+// Query string values are always text, e.g. ?status=APPLIED,INTERVIEWING.
+// This turns "A,B" into ['A', 'B'] and checks each value.
+const commaList = (values) =>
+  z
+    .string()
+    .transform((s) => s.split(',').map((v) => v.trim()).filter(Boolean))
+    .pipe(z.array(z.enum(values)).min(1));
+
+export const SORT_FIELDS = ['updatedAt', 'createdAt', 'appliedAt', 'company', 'roleTitle', 'status', 'salaryMax'];
+
+// GET /applications (and later the CSV export, which takes the same filters).
+export const listQuerySchema = z.object({
+  status: commaList(STATUSES).optional(),
+  workMode: commaList(WORK_MODES).optional(),
+  search: z.string().trim().max(100).optional(),
+  sort: z.enum(SORT_FIELDS).default('updatedAt'),
+  order: z.enum(['asc', 'desc']).default('desc'),
+  // coerce: turn the text "2" into the number 2 before checking it.
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+});
+
 // PATCH /:id/status (used by the Kanban board).
 export const statusSchema = z.object({
   status: z.enum(STATUSES, { error: `Status must be one of: ${STATUSES.join(', ')}` }),

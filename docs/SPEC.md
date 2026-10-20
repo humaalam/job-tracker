@@ -220,6 +220,8 @@ Request flow: **route → middleware (auth, validate) → controller → service
   - filters: `status`, `workMode`, `search`
   - sorting: `sort`, `order`
   - paging: `page`, `limit`
+  - details: `status` and `workMode` take one value or a comma-separated list (`?status=APPLIED,INTERVIEWING`); `search` matches company, role title or location (case-insensitive); `sort` is one of `updatedAt` (default), `createdAt`, `appliedAt`, `company`, `roleTitle`, `status`, `salaryMax`, and `order` is `asc` or `desc` (default); `limit` defaults to 20, max 100
+  - returns `{ applications, pagination: { page, limit, total, totalPages } }`
 - `POST /applications`: also logs the initial status
 - `GET /applications/export.csv`: accepts the same filters as the list
 - `GET /applications/:id`: includes contacts, interviews, and history

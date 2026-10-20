@@ -66,12 +66,50 @@ export async function createApplication(userId, data) {
   });
 }
 
-// Filters, sorting and paging are added in Phase 3 step 4.
-export async function listApplications(userId) {
-  return prisma.application.findMany({
-    where: { userId },
-    orderBy: { updatedAt: 'desc' },
-  });
+// Turns the list filters into a Prisma `where`. Always scoped to the user.
+// Exported so the CSV export (Phase 5) applies exactly the same filters.
+export function buildListWhere(userId, { status, workMode, search }) {
+  const where = { userId };
+  if (status) {
+    where.status = { in: status };
+  }
+  if (workMode) {
+    where.workMode = { in: workMode };
+  }
+  if (search) {
+    // ILIKE '%search%' in SQL: "contains", ignoring upper/lower case.
+    const contains = { contains: search, mode: 'insensitive' };
+    where.OR = [{ company: contains }, { roleTitle: contains }, { location: contains }];
+  }
+  return where;
+}
+
+export function buildOrderBy({ sort, order }) {
+  // appliedAt and salaryMax can be empty: keep those rows at the end either way.
+  const primary = ['appliedAt', 'salaryMax'].includes(sort)
+    ? { [sort]: { sort: order, nulls: 'last' } }
+    : { [sort]: order };
+  // id breaks ties (e.g. same company), so paging never skips or repeats a row.
+  return [primary, { id: 'asc' }];
+}
+
+export async function listApplications(userId, query) {
+  const { page, limit } = query;
+  const where = buildListWhere(userId, query);
+  // Two reads in one transaction, so the count matches the page we return.
+  const [applications, total] = await prisma.$transaction([
+    prisma.application.findMany({
+      where,
+      orderBy: buildOrderBy(query),
+      skip: (page - 1) * limit,
+      take: limit,
+    }),
+    prisma.application.count({ where }),
+  ]);
+  return {
+    applications,
+    pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+  };
 }
 
 export async function getApplication(userId, id) {

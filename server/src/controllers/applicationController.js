@@ -6,9 +6,10 @@ export async function create(req, res) {
   res.status(201).json({ application });
 }
 
+// validate(listQuerySchema, 'query') has already parsed req.query.
 export async function list(req, res) {
-  const applications = await applicationService.listApplications(req.userId);
-  res.json({ applications });
+  const { applications, pagination } = await applicationService.listApplications(req.userId, req.query);
+  res.json({ applications, pagination });
 }
 
 export async function getOne(req, res) {
