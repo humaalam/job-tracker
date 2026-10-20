@@ -1,5 +1,6 @@
 import StatCard from '../components/dashboard/StatCard.jsx';
 import StatusCounts from '../components/dashboard/StatusCounts.jsx';
+import WeeklyChart from '../components/dashboard/WeeklyChart.jsx';
 import UpcomingInterviews from '../components/interviews/UpcomingInterviews.jsx';
 import { useDashboardStats } from '../hooks/useDashboardStats.js';
 import { formatPercent } from '../lib/format.js';
@@ -39,6 +40,12 @@ export default function DashboardPage() {
           }
         />
         <StatCard label="Interviews this week" value={stats.upcomingInterviews.length} hint="Next 7 days" />
+      </div>
+
+      <div className="mt-6 rounded-lg border border-slate-200 bg-white p-6">
+        <h2 className="text-lg font-semibold">Applications per week</h2>
+        <p className="mb-4 text-sm text-slate-500">Last 12 weeks, by the date you applied</p>
+        <WeeklyChart weeks={stats.applicationsPerWeek} />
       </div>
 
       {/* items-start: each card is only as tall as its own content */}

@@ -6,7 +6,8 @@ import DeleteApplicationDialog from '../components/applications/DeleteApplicatio
 import FilterBar from '../components/applications/FilterBar.jsx';
 import KanbanBoard from '../components/applications/KanbanBoard.jsx';
 import ViewToggle from '../components/applications/ViewToggle.jsx';
-import Button from '../components/ui/Button.jsx';
+import { exportCsvUrl } from '../api/applications.js';
+import Button, { buttonClass } from '../components/ui/Button.jsx';
 import Pagination from '../components/ui/Pagination.jsx';
 import { useApplications } from '../hooks/useApplications.js';
 import { useDebouncedValue } from '../hooks/useDebouncedValue.js';
@@ -38,13 +39,18 @@ export default function ApplicationsPage() {
   // only once typing pauses for 300 ms.
   const debouncedSearch = useDebouncedValue(filters.search.trim(), 300);
 
-  const { data, isPending, isError, error, isPlaceholderData } = useApplications({
-    ...(view === 'board' ? { limit: BOARD_LIMIT } : { page }),
+  // Shared by the list and the CSV export, so the file has exactly what's shown.
+  const filterParams = {
     status: filters.status.join(','),
     workMode: filters.workMode.join(','),
     search: debouncedSearch,
     sort: filters.sort,
     order: filters.order,
+  };
+
+  const { data, isPending, isError, error, isPlaceholderData } = useApplications({
+    ...(view === 'board' ? { limit: BOARD_LIMIT } : { page }),
+    ...filterParams,
   });
 
   function goToPage(nextPage) {
@@ -76,10 +82,16 @@ export default function ApplicationsPage() {
 
   return (
     <section>
-      <div className="flex items-center justify-between gap-4">
+      {/* flex-wrap: on narrow screens the buttons move below the title instead of overflowing */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">Applications</h1>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <ViewToggle view={view} onChange={changeView} />
+          {/* A plain link: the server sends the file as a download (Content-Disposition),
+              so the browser saves it instead of leaving the page. */}
+          <a href={exportCsvUrl(filterParams)} download className={buttonClass('secondary')}>
+            Export CSV
+          </a>
           <Button onClick={() => setEditing('new')}>New application</Button>
         </div>
       </div>

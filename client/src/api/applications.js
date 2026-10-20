@@ -1,15 +1,27 @@
-import { api } from './client.js';
+import { api, API_BASE } from './client.js';
 
-// Lists the user's applications. `params` are the list query parameters
-// (page, limit, status, workMode, search, sort, order); empty ones are left out.
-// Returns { applications, pagination: { page, limit, total, totalPages } }.
-export function listApplications(params = {}, options) {
+// { status: 'APPLIED', search: '' } -> "?status=APPLIED". Empty values are left out.
+function toQueryString(params) {
   const query = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {
     if (value !== undefined && value !== null && value !== '') query.set(key, value);
   }
   const queryString = query.toString();
-  return api.get(`/applications${queryString ? `?${queryString}` : ''}`, options);
+  return queryString ? `?${queryString}` : '';
+}
+
+// Lists the user's applications. `params` are the list query parameters
+// (page, limit, status, workMode, search, sort, order).
+// Returns { applications, pagination: { page, limit, total, totalPages } }.
+export function listApplications(params = {}, options) {
+  return api.get(`/applications${toQueryString(params)}`, options);
+}
+
+// Not a fetch: the address of the CSV download, used as a link's href. The
+// browser then downloads the file itself, with the auth cookie (same origin).
+// Takes the same filters and sorting as the list, without paging.
+export function exportCsvUrl(params = {}) {
+  return `${API_BASE}/applications/export.csv${toQueryString(params)}`;
 }
 
 // Create and update return the saved application; delete returns nothing (204).

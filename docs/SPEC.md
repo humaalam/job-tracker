@@ -91,6 +91,10 @@ The app lets users sign up, track job applications through a fixed status pipeli
 > - The "By status" rows link to `/applications?status=<STATUS>`.
 > - The temporary `/health` check on the dashboard (Phase 6) was removed together with `api/health.js` and `hooks/useHealth.js`.
 
+> **Decision (Phase 10, Step 2):** We use Recharts 3 (`^3.10.1`) for the weekly chart: a single-series column chart with one color (blue-600) and no legend. The title names the series. There's a hover tooltip per week, and a visually hidden table gives screen readers the same numbers. `weekStart` (`YYYY-MM-DD`) is read as a local date (`parseDateOnly`), never with `new Date('YYYY-MM-DD')`, which means UTC midnight.
+> - **CSV export** is a plain `<a href download>` link on the Applications page, not a `fetch`: the browser downloads the file itself and sends the cookie (same origin). The link carries the page's current filters and sorting (`exportCsvUrl` in `api/applications.js`, which shares the `/api` prefix `API_BASE` with `client.js`). Trade-off: if the session has expired, the browser shows the 401 JSON instead of the app's error message.
+> - Recharts pushes the JS bundle over Vite's 500 kB warning. That's fine for now; loading the dashboard lazily (`React.lazy`) is the fix if it ever matters.
+
 ### Testing & tooling
 | Technology | What it is | Why we use it | One alternative |
 |---|---|---|---|

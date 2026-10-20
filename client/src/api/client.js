@@ -1,3 +1,6 @@
+// Every API address starts with this (in development the Vite proxy forwards it).
+export const API_BASE = '/api';
+
 // Thrown for every failed API call. The UI shows `message`; code can check
 // `status` (e.g. 401 = not logged in) and `details` (zod validation issues).
 export class ApiError extends Error {
@@ -14,7 +17,7 @@ export class ApiError extends Error {
 export async function apiFetch(path, { body, headers, ...options } = {}) {
   let response;
   try {
-    response = await fetch(`/api${path}`, {
+    response = await fetch(`${API_BASE}${path}`, {
       ...options,
       // Send the auth cookie. Same-origin requests send it anyway; this keeps
       // it working if the API is ever on a different origin.

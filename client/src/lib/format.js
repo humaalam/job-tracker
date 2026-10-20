@@ -54,6 +54,14 @@ export function formatDateTime(isoString) {
   return new Date(isoString).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
 }
 
+// "2026-10-12" (a date without a time) -> a Date at midnight *local* time.
+// new Date('2026-10-12') would mean midnight UTC, which is still 11 Oct in
+// time zones west of UTC.
+export function parseDateOnly(text) {
+  const [year, month, day] = text.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
 // 0.4545 -> "45%", in the browser's language. '—' when there is no value.
 export function formatPercent(fraction) {
   if (fraction == null) return '—';
