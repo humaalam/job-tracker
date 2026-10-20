@@ -99,9 +99,17 @@ describe('sorting', () => {
   });
 
   it('sorts by status in pipeline order (the enum order), not alphabetically', async () => {
-    const { companies } = await list('?sort=status&order=asc');
+    const { body } = await list('?sort=status&order=asc');
 
-    expect(companies).toEqual(['Acme', 'Globex', 'Umbrella', 'Initech', 'Hooli']);
+    // Compare statuses, not companies: Globex and Umbrella are both APPLIED,
+    // and their order is decided by their random ids.
+    expect(body.applications.map((a) => a.status)).toEqual([
+      'WISHLIST',
+      'APPLIED',
+      'APPLIED',
+      'INTERVIEWING',
+      'REJECTED',
+    ]);
   });
 
   it('keeps empty appliedAt / salaryMax at the end in both directions', async () => {
