@@ -1,0 +1,10 @@
+import { z } from 'zod';
+
+// An optional free-text field: trimmed, with a length cap. null clears it on update.
+export const optionalText = (max) => z.string().trim().max(max).nullish();
+
+export const requiredText = (label) =>
+  z.string({ error: `${label} is required` }).trim().min(1, `${label} is required`).max(200);
+
+// For PATCH schemas: every field is optional, but at least one must be sent.
+export const notEmpty = [(d) => Object.keys(d).length > 0, { message: 'Send at least one field to update' }];

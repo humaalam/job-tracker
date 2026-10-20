@@ -1,13 +1,12 @@
-import { z } from 'zod';
 import { prisma } from '../db/prisma.js';
 import { HttpError } from '../utils/httpError.js';
+import { isUuid } from '../utils/isUuid.js';
 import { salaryRangeOk, SALARY_RANGE_MESSAGE } from '../validators/applications.js';
 
 const notFound = () => new HttpError(404, 'Application not found');
 
-// Postgres rejects a non-UUID for a uuid column (that would be a 500), so treat it as not found.
 function assertUuid(id) {
-  if (!z.uuid().safeParse(id).success) {
+  if (!isUuid(id)) {
     throw notFound();
   }
 }
@@ -15,7 +14,8 @@ function assertUuid(id) {
 // Finds the user's application or throws 404. Matching on userId too means
 // another user's application looks exactly like a missing one, so we don't
 // reveal that it exists. `db` is prisma, or `tx` inside a transaction.
-async function findOwnedApplication(db, userId, id, options = {}) {
+// Exported so interviews and contacts can check the parent application.
+export async function findOwnedApplication(db, userId, id, options = {}) {
   assertUuid(id);
   const application = await db.application.findFirst({ where: { id, userId }, ...options });
   if (!application) {

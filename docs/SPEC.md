@@ -231,9 +231,10 @@ Request flow: **route → middleware (auth, validate) → controller → service
 - `GET /applications/:id/history`
 
 **Interviews**
-- `GET` / `POST /applications/:id/interviews`
+- `GET` / `POST /applications/:id/interviews`: list (soonest first) / create; returns `{ interviews }` / `{ interview }`
 - `PATCH` / `DELETE /interviews/:interviewId`
-- `GET /interviews/upcoming?days=7`
+- `GET /interviews/upcoming?days=7`: from now until `days` days ahead (1–365, default 7), soonest first, **without CANCELLED** ones. Each interview includes `application: { id, company, roleTitle, status }`. Returns `{ interviews }`.
+- `scheduledAt` must be an ISO date-time **with a timezone** (`2026-11-03T15:00:00Z` or `...+02:00`); it is stored and returned in UTC.
 
 **Contacts**
 - `GET` / `POST /applications/:id/contacts`

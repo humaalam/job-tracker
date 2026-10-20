@@ -7,7 +7,9 @@ import {
   statusSchema,
   listQuerySchema,
 } from '../validators/applications.js';
+import { createInterviewSchema } from '../validators/interviews.js';
 import * as applicationController from '../controllers/applicationController.js';
+import * as interviewController from '../controllers/interviewController.js';
 
 export const applicationsRouter = Router();
 
@@ -21,3 +23,7 @@ applicationsRouter.patch('/:id', validate(updateApplicationSchema), applicationC
 applicationsRouter.delete('/:id', applicationController.remove);
 applicationsRouter.patch('/:id/status', validate(statusSchema), applicationController.changeStatus);
 applicationsRouter.get('/:id/history', applicationController.history);
+
+// An application's interviews.
+applicationsRouter.get('/:id/interviews', interviewController.list);
+applicationsRouter.post('/:id/interviews', validate(createInterviewSchema), interviewController.create);

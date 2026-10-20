@@ -1,14 +1,11 @@
 import { z } from 'zod';
+import { optionalText, requiredText, notEmpty } from './common.js';
 
 // Same values as the enums in schema.prisma.
 export const STATUSES = ['WISHLIST', 'APPLIED', 'INTERVIEWING', 'OFFER', 'REJECTED', 'WITHDRAWN'];
 export const WORK_MODES = ['REMOTE', 'HYBRID', 'ONSITE'];
 
-// An optional free-text field: trimmed, with a length cap. null clears it on update.
-const optionalText = (max) => z.string().trim().max(max).nullish();
 const salary = z.number().int().min(0).nullish();
-const requiredText = (label) =>
-  z.string({ error: `${label} is required` }).trim().min(1, `${label} is required`).max(200);
 
 // The editable fields, without status. Kept unrefined so create and update can
 // both build on it (zod can't .partial() or .omit() a schema that has a .refine).
@@ -50,7 +47,7 @@ export const createApplicationSchema = applicationFields
 export const updateApplicationSchema = applicationFields
   .extend({ status: z.enum(STATUSES) })
   .partial()
-  .refine((d) => Object.keys(d).length > 0, { message: 'Send at least one field to update' })
+  .refine(...notEmpty)
   .refine(...checkSalaryRange);
 
 // Query string values are always text, e.g. ?status=APPLIED,INTERVIEWING.
