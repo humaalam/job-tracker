@@ -66,6 +66,8 @@ The app lets users sign up, track job applications through a fixed status pipeli
 
 > **Decision (Phase 6, Step 1):** We use Vite 8, React 19 and Tailwind CSS 4. Tailwind 4 plugs into Vite through `@tailwindcss/vite` and is switched on by a single `@import 'tailwindcss';` line in `src/index.css`. It needs no `tailwind.config.js` or PostCSS config, because it finds the class names in our files by itself. The client was written by hand instead of with `npm create vite`, so it contains no demo files.
 
+> **Decision (Phase 6, Step 2):** We use React Router 8 (the `react-router` package; the old `react-router-dom` name is no longer needed) in **declarative mode**: `<BrowserRouter>` in `main.jsx` and `<Routes>`/`<Route>` in `App.jsx`. The app pages are nested under a layout route (`AppLayout`, navbar + `<Outlet />`), and `/login` and `/register` sit outside it. We chose this over data mode (`createBrowserRouter` with loaders) because TanStack Query loads our data.
+
 ### Testing & tooling
 | Technology | What it is | Why we use it | One alternative |
 |---|---|---|---|
@@ -331,6 +333,7 @@ Request flow: **route → middleware (auth, validate) → controller → service
 6. Upload the client build to **S3**. Create a **CloudFront** distribution with two routes:
    - `/*` → S3
    - `/api/*` → EC2
+   - client-side routes such as `/applications/123` aren't real files in S3, so refreshing a deep link needs `index.html` served instead. Do this with a small CloudFront Function on the `/*` behaviour that rewrites paths without a file extension to `/index.html`. Don't use a distribution-wide custom error response: it would also turn the API's real 404 JSON responses into `index.html`.
 7. HTTPS check and a full smoke test on the live URL.
 8. Cost review and a teardown checklist: how to stop or delete resources to avoid charges.
 
