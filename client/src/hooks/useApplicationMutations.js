@@ -8,12 +8,22 @@ import {
 
 const CHANGE_STATUS_KEY = ['applications', 'changeStatus'];
 
+// The dashboard's numbers come from the applications, so they go out of date
+// with every change. If the dashboard isn't on screen, this only marks it, and
+// it is refetched when it is shown again.
+const invalidateDashboard = (queryClient) =>
+  queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+
 // After any change, mark every cached applications query (all pages and
-// filters) as out of date, so what's on screen is refetched.
+// filters) and the dashboard as out of date, so what's on screen is refetched.
 // Returning the promise keeps the mutation "pending" until that refetch is done.
 function useInvalidateApplications() {
   const queryClient = useQueryClient();
-  return () => queryClient.invalidateQueries({ queryKey: ['applications'] });
+  return () =>
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['applications'] }),
+      invalidateDashboard(queryClient),
+    ]);
 }
 
 export function useCreateApplication() {
@@ -68,7 +78,10 @@ export function useChangeApplicationStatus() {
     // could bring back the old status of that card and make it jump back.
     onSettled: () => {
       if (queryClient.isMutating({ mutationKey: CHANGE_STATUS_KEY }) === 1) {
-        return queryClient.invalidateQueries({ queryKey: ['applications'] });
+        return Promise.all([
+          queryClient.invalidateQueries({ queryKey: ['applications'] }),
+          invalidateDashboard(queryClient),
+        ]);
       }
     },
   });
@@ -80,6 +93,10 @@ export function useDeleteApplication() {
     mutationFn: deleteApplication,
     // Only the lists: refetching the deleted application's detail page would
     // just fail with a 404 while that page is still on screen.
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['applications', 'list'] }),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['applications', 'list'] }),
+        invalidateDashboard(queryClient),
+      ]),
   });
 }

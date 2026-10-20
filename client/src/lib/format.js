@@ -54,6 +54,14 @@ export function formatDateTime(isoString) {
   return new Date(isoString).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
 }
 
+// 0.4545 -> "45%", in the browser's language. '—' when there is no value.
+export function formatPercent(fraction) {
+  if (fraction == null) return '—';
+  return new Intl.NumberFormat(undefined, { style: 'percent', maximumFractionDigits: 0 }).format(
+    fraction,
+  );
+}
+
 // Only http(s) addresses become links. Anything else (e.g. "javascript:...")
 // could run code when clicked, so it is shown as plain text instead.
 export function isWebUrl(text) {

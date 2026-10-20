@@ -83,8 +83,13 @@ The app lets users sign up, track job applications through a fixed status pipeli
 > - If `/auth/me` fails for another reason (e.g. the API is down), `ProtectedRoute` shows the error with a "Try again" button instead of pretending the user is logged out.
 > - A 401 from any other query means the session expired. A global `QueryCache.onError` then sets the user to `null`, and `ProtectedRoute` redirects.
 
-> **Decision (Phase 9, Steps 1–2):** The detail page shows interviews and contacts from its own query (`GET /applications/:id` already includes them: interviews soonest first, contacts oldest first), so there are no separate list queries. After a create, edit or delete, only `['applications', 'detail', id]` is refetched (`hooks/useInvalidateApplication.js`, shared by both). Phase 10 also needs interview changes to refresh the dashboard's upcoming interviews.
+> **Decision (Phase 9, Steps 1–2):** The detail page shows interviews and contacts from its own query (`GET /applications/:id` already includes them: interviews soonest first, contacts oldest first), so there are no separate list queries. After a create, edit or delete, only `['applications', 'detail', id]` is refetched (`hooks/useInvalidateApplication.js`, shared by both), plus the dashboard (see Phase 10).
 > - The form uses `<input type="datetime-local">`, which has no time zone. Values are shown in the browser's local time and sent as UTC with `toISOString()`, which matches the API's "date-time with a timezone" rule.
+
+> **Decision (Phase 10, Step 1):** The dashboard makes one request, `GET /dashboard/stats?tz=<browser time zone>`, cached as `['dashboard', 'stats', tz]`. It doesn't call `/interviews/upcoming` separately, because the stats already include the upcoming interviews.
+> - Every application change (create, edit, Kanban move, delete) and every interview or contact change also invalidates `['dashboard']`. While the dashboard isn't on screen, this only marks it out of date, and it is refetched when shown again.
+> - The "By status" rows link to `/applications?status=<STATUS>`.
+> - The temporary `/health` check on the dashboard (Phase 6) was removed together with `api/health.js` and `hooks/useHealth.js`.
 
 ### Testing & tooling
 | Technology | What it is | Why we use it | One alternative |
