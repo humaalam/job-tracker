@@ -101,3 +101,79 @@ docker stop job-tracker-server-test
 ```
 
 The secret above is only for this local test. Production gets its own generated value in Step 5.
+
+## Step 4: RDS database and security groups
+
+Goal: a private PostgreSQL database that only our EC2 server can reach.
+
+Before you start, check that the region at the top right is `eu-north-1`. Console labels change, so if a setting below is missing or named differently, stop and note what you see instead of guessing.
+
+### 1. Create two security groups
+
+A **security group** is a firewall around an AWS resource. Inbound traffic is blocked unless a rule allows it. Create them under **EC2** → **Security Groups** → **Create security group**, both in the **default VPC**:
+
+| Name              | Description            | Inbound rules                                                        |
+| ----------------- | ---------------------- | -------------------------------------------------------------------- |
+| `job-tracker-app` | Job Tracker EC2 server | None for now (added in Step 5)                                       |
+| `job-tracker-db`  | Job Tracker database   | Type **PostgreSQL** (port 5432), source: the `job-tracker-app` group |
+
+Create `job-tracker-app` first, because the second group refers to it. Leave the outbound rules as they are.
+
+### 2. Generate the database password
+
+Run this on your PC. Hex is only letters and digits, so the password is safe inside `DATABASE_URL`:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(18).toString('hex'))"
+```
+
+Save it in a password manager. **Never put it in this file, in Git or in a chat.**
+
+### 3. Create the database
+
+Open **Aurora and RDS** → **Databases** → **Create database**, and use these settings:
+
+| Setting                                              | Value                                                |
+| ---------------------------------------------------- | ---------------------------------------------------- |
+| Creation method                                      | **Full** (not Express or Restore from S3)            |
+| Engine                                               | **PostgreSQL** (not Aurora), latest **17.x** version |
+| Template                                             | **Free tier**                                        |
+| DB instance identifier                               | `job-tracker-db`                                     |
+| Master username                                      | `jobtracker`                                         |
+| Credentials management                               | **Self managed**, with your generated password       |
+| Instance class                                       | `db.t3.micro` or `db.t4g.micro`                      |
+| Storage                                              | 20 GB, General Purpose SSD                           |
+| Storage autoscaling                                  | **Off**                                              |
+| Availability                                         | **Single-AZ** (one instance)                         |
+| Compute resource                                     | **Don't connect to an EC2 compute resource**         |
+| VPC                                                  | Default VPC                                          |
+| Public access                                        | **No**                                               |
+| VPC security group                                   | Choose existing: `job-tracker-db`. Remove `default`. |
+| Performance Insights / Enhanced Monitoring           | **Off**, if offered                                  |
+| Additional configuration → **Initial database name** | `jobtracker`                                         |
+| Deletion protection                                  | **Off**, so the teardown in Step 8 is simple         |
+
+Leave everything else as the template set it. Check that the estimated cost panel looks right, then create the database. It takes about 5–15 minutes to reach **Available**.
+
+**Initial database name matters.** If it's blank, RDS only creates the built-in `postgres` database, and our migrations would have nowhere to go.
+
+Charges against your credits start once the database exists, so it's best to move on to Step 5 soon.
+
+### 4. Check the result
+
+Open the database and confirm:
+
+- Status is **Available**, and the region is `eu-north-1`.
+- **Connectivity & security**: publicly accessible is **No**, and the security group is `job-tracker-db`.
+- **Configuration**: DB name is `jobtracker`, and the engine version is 17.x.
+
+Copy the **Endpoint** into your password manager next to the password. On the **Connectivity & security** tab, the view may start on **Code snippets**, which you can ignore; switch it to **Endpoints**. You'll need both in Step 5, which is also when we first connect. RDS on PostgreSQL 15+ requires encrypted connections, so `DATABASE_URL` will need SSL settings then.
+
+### Checklist
+
+- [x] `job-tracker-app` security group created, with no inbound rules
+- [x] `job-tracker-db` security group allows 5432 only from `job-tracker-app`
+- [x] Database password saved in a password manager
+- [x] RDS instance is Available, on PostgreSQL 17.11, in `eu-north-1`
+- [x] Publicly accessible is No, initial database name is `jobtracker`
+- [x] Endpoint saved

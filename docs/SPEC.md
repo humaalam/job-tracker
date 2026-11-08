@@ -179,6 +179,8 @@ The app lets users sign up, track job applications through a fixed status pipeli
 > - The image is built for x86 (`amd64`), so EC2 must use an x86 type such as `t3.micro`. ARM types (`t4g`) can't run it without a separate ARM build.
 > - It's about 1 GB on disk, mostly the Prisma packages. We accept that for simplicity. The alternative is a separate migration image.
 
+> **Decision (Phase 12, Step 4):** The RDS instance `job-tracker-db` (PostgreSQL 17, Free tier template, Single-AZ, 20 GB, database `jobtracker`) is **not publicly accessible**. Two security groups control access: `job-tracker-db` allows port 5432 only from the `job-tracker-app` group, which Step 5 attaches to EC2. Because no outside machine can reach it, the first real connection happens from EC2 in Step 5.
+
 ---
 
 ## Folder structure (monorepo)
