@@ -33,7 +33,7 @@ You'll use this user every day from now on.
 3. Permissions: **Attach policies directly** → tick **AdministratorAccess** → create the user.
 4. Copy the **Console sign-in URL** (`https://<account-id>.signin.aws.amazon.com/console`) and bookmark it.
 5. Open the new user → **Security credentials** → **Assign MFA device** (same as for root).
-6. Sign out, then sign in again with the bookmarked URL as `huma-admin`. **From here on, use only this user.**
+6. Sign out, then sign in again with the bookmarked URL as `huma-admin`. **Owner login for website , huma-admin for the CLI only**
 
 Don't create access keys yet. The AWS CLI needs them in Step 5 (pushing to ECR).
 
@@ -45,7 +45,7 @@ A **region** is a group of AWS data centers in one area (e.g. `eu-west-2` = Lond
 - Set it in the region dropdown at the top right of the console.
 - CloudFront, IAM and Budgets are **global**, so they show "Global" instead of a region. That's normal.
 
-Chosen region: `________` (record it here and in the SPEC decision note).
+Chosen region: `eu-north-1` (record it here and in the SPEC decision note).
 
 ### 5. Budget alerts
 
@@ -61,9 +61,9 @@ Check what your account's free offer covers under **Billing and Cost Management*
 
 ### Checklist
 
-- [ ] Root has MFA and no access keys
-- [ ] IAM access to billing is activated
-- [ ] `huma-admin` exists with AdministratorAccess and MFA, and you're signed in as it
-- [ ] Region chosen and selected in the console
-- [ ] Zero-spend budget and monthly budget created, emails confirmed
-- [ ] Free Tier alerts on
+- [x] Root (Owner) has MFA and no access keys
+- [x] IAM access to billing: not available in new console (Free plan); I check billing as Owner
+- [x] `huma-admin` exists with AdministratorAccess, CLI only (no console access in new console); access key comes in Step 5
+- [x] Region chosen: `eu-north-1` (Stockholm), locked by the Free plan
+- [x] Zero-spend budget and monthly budget ($10) created, emails confirmed
+- [ ] Free Tier alerts on (not found in new console; using budgets + Free Tier page instead)
