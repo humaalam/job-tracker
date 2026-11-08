@@ -23,6 +23,11 @@ WORKDIR /app/server
 # our config, which requires these two variables; generate never connects.
 RUN DATABASE_URL=postgresql://build JWT_SECRET=build npx prisma generate
 
+# RDS certificates are signed by Amazon's own authority, which Node doesn't
+# trust by default. Adding it lets the database connection be verified.
+ADD --chmod=644 https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem /app/rds-ca.pem
+ENV NODE_EXTRA_CA_CERTS=/app/rds-ca.pem
+
 ENV NODE_ENV=production
 EXPOSE 4000
 

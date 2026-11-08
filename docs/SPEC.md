@@ -181,6 +181,14 @@ The app lets users sign up, track job applications through a fixed status pipeli
 
 > **Decision (Phase 12, Step 4):** The RDS instance `job-tracker-db` (PostgreSQL 17, Free tier template, Single-AZ, 20 GB, database `jobtracker`) is **not publicly accessible**. Two security groups control access: `job-tracker-db` allows port 5432 only from the `job-tracker-app` group, which Step 5 attaches to EC2. Because no outside machine can reach it, the first real connection happens from EC2 in Step 5.
 
+> **Decision (Phase 12, Step 5):** The server runs on one `t3.micro` (Amazon Linux 2023, x86) from the ECR image `job-tracker-server:v1`, with host port 80 mapped to container port 4000.
+>
+> - **No SSH:** the instance has no key pair and no open port 22. We open a shell through Session Manager in the browser.
+> - **No keys on the server:** the `job-tracker-ec2-role` IAM role grants read access to ECR and Session Manager access.
+> - **Secrets** live only in `/etc/job-tracker.env` on the instance (root-only, mode 600) and reach the container through `--env-file`.
+> - **Database TLS:** `DATABASE_URL` ends in `?sslmode=require`, and the image trusts Amazon's RDS certificates through `NODE_EXTRA_CA_CERTS`. In `pg` 8 this mode verifies the certificate. `pg` 9 will weaken what `require` means, so check this setting before upgrading.
+> - **Migrations** run from the same image with `npx prisma migrate deploy`.
+
 ---
 
 ## Folder structure (monorepo)

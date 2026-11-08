@@ -177,3 +177,88 @@ Copy the **Endpoint** into your password manager next to the password. On the **
 - [x] RDS instance is Available, on PostgreSQL 17.11, in `eu-north-1`
 - [x] Publicly accessible is No, initial database name is `jobtracker`
 - [x] Endpoint saved
+
+## Step 5: Push the image to ECR and run it on EC2
+
+Goal: the server running on EC2, connected to RDS.
+
+### 1. AWS CLI on your PC
+
+1. Install the AWS CLI from <https://awscli.amazonaws.com/AWSCLIV2.msi> and reopen VS Code.
+2. In **IAM** → **Users** → `huma-admin` → **Security credentials**, create an access key for **Command Line Interface (CLI)**.
+3. Run `aws configure` with that key, region `eu-north-1` and output `json`. Keys are stored in `.aws` in your user folder, never in this repo.
+4. Check it: `aws sts get-caller-identity` should end in `user/huma-admin`.
+
+### 2. Upload the image (PowerShell, on your PC)
+
+```powershell
+aws ecr create-repository --repository-name job-tracker-server --no-cli-pager
+$ACCOUNT = aws sts get-caller-identity --query Account --output text
+$REGISTRY = "$ACCOUNT.dkr.ecr.eu-north-1.amazonaws.com"
+aws ecr get-login-password | docker login --username AWS --password-stdin $REGISTRY
+docker tag job-tracker-server "$REGISTRY/job-tracker-server:v1"
+docker push "$REGISTRY/job-tracker-server:v1"
+```
+
+### 3. Create the role and launch the server (AWS website)
+
+**IAM** → **Roles** → **Create role** → AWS service, EC2. Attach `AmazonEC2ContainerRegistryReadOnly` and `AmazonSSMManagedInstanceCore`, and name it `job-tracker-ec2-role`.
+
+**EC2** → **Launch instances**:
+
+| Setting               | Value                                     |
+| --------------------- | ----------------------------------------- |
+| Name                  | `job-tracker-server`                      |
+| Image                 | Amazon Linux 2023, 64-bit (x86)           |
+| Instance type         | `t3.micro`                                |
+| Key pair              | Proceed without a key pair                |
+| Auto-assign public IP | Enable                                    |
+| Security group        | Select existing: `job-tracker-app`        |
+| IAM instance profile  | `job-tracker-ec2-role` (Advanced details) |
+
+### 4. Set up the server (browser terminal)
+
+Open it with **Instances** → tick the server → **Connect** → **Session Manager**. Run these one at a time. `read` waits for you to paste a value.
+
+```bash
+sudo dnf install -y docker
+sudo systemctl enable --now docker
+
+ACCOUNT=$(aws sts get-caller-identity --region eu-north-1 --query Account --output text)
+REGISTRY=$ACCOUNT.dkr.ecr.eu-north-1.amazonaws.com
+aws ecr get-login-password --region eu-north-1 | sudo docker login --username AWS --password-stdin $REGISTRY
+sudo docker pull $REGISTRY/job-tracker-server:v1
+
+read -r -p "Endpoint: " DB_HOST
+read -r -s -p "Password: " DB_PASS; echo
+sudo install -m 600 /dev/null /etc/job-tracker.env
+printf 'DATABASE_URL=postgresql://jobtracker:%s@%s:5432/jobtracker?sslmode=require\nJWT_SECRET=%s\n' "$DB_PASS" "$DB_HOST" "$(openssl rand -hex 48)" | sudo tee /etc/job-tracker.env > /dev/null
+unset DB_PASS
+
+sudo docker run --rm --env-file /etc/job-tracker.env $REGISTRY/job-tracker-server:v1 npx prisma migrate deploy
+sudo docker run -d --name job-tracker-server --restart unless-stopped --env-file /etc/job-tracker.env -p 80:4000 $REGISTRY/job-tracker-server:v1
+```
+
+### 5. Check it
+
+```bash
+curl -s localhost/api/health; echo
+curl -s -o /dev/null -w "%{http_code}\n" -X POST localhost/api/auth/login -H 'content-type: application/json' -d '{"email":"nobody@example.com","password":"wrong-password"}'
+```
+
+A `401` from the second command means the app reached the database. `500` means the connection failed. The `SECURITY WARNING` about SSL modes in the logs is expected.
+
+### Shipping a new version later
+
+1. On your PC, rebuild the image, then tag and push it as the next version (`v2`).
+2. On the server, log Docker in again and run `docker pull` for `v2`.
+3. Run the `migrate deploy` command with `v2`.
+4. Run `sudo docker rm -f job-tracker-server`, then the `docker run -d` command with `v2`.
+
+### Checklist
+
+- [x] AWS CLI signed in as `huma-admin`
+- [x] Image `job-tracker-server:v1` is in ECR
+- [x] `job-tracker-server` EC2 instance is running with the `job-tracker-ec2-role` role
+- [x] Migrations applied to RDS
+- [x] Container running; health check OK and login test returns 401
