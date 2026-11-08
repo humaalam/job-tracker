@@ -67,3 +67,37 @@ Check what your account's free offer covers under **Billing and Cost Management*
 - [x] Region chosen: `eu-north-1` (Stockholm), locked by the Free plan
 - [x] Zero-spend budget and monthly budget ($10) created, emails confirmed
 - [ ] Free Tier alerts on (not found in new console; using budgets + Free Tier page instead)
+
+## Step 3: Docker image for the server
+
+Goal: package the server as an image and prove that it works against the local database. Start Postgres first (`npm run db:up`), and run these from the repo root.
+
+The build runs from the root, not `server/`, because the npm workspaces share one `package-lock.json`:
+
+```bash
+docker build -f server/Dockerfile -t job-tracker-server .
+```
+
+The container gets its settings from `-e` flags, because the image contains no `.env`. Inside Docker's network, the database's address is `db` (its Compose service name), not `localhost`.
+
+Create the tables, using the image (safe to re-run; it only applies new migrations):
+
+```bash
+docker run --rm --network job-tracker_default -e DATABASE_URL=postgresql://jobtracker:jobtracker@db:5432/jobtracker -e JWT_SECRET=local-docker-test-secret-at-least-32-chars job-tracker-server npx prisma migrate deploy
+```
+
+Start the server at <http://localhost:4200> (a different port, so it doesn't clash with `npm run dev:server`):
+
+```bash
+docker run -d --rm --name job-tracker-server-test --network job-tracker_default -p 4200:4000 -e DATABASE_URL=postgresql://jobtracker:jobtracker@db:5432/jobtracker -e JWT_SECRET=local-docker-test-secret-at-least-32-chars job-tracker-server
+```
+
+Check it and stop it (`docker stop` should take about a second, because the server shuts down cleanly):
+
+```bash
+curl http://localhost:4200/api/health
+docker logs job-tracker-server-test
+docker stop job-tracker-server-test
+```
+
+The secret above is only for this local test. Production gets its own generated value in Step 5.

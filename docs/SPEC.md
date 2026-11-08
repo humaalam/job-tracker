@@ -171,6 +171,14 @@ The app lets users sign up, track job applications through a fixed status pipeli
 > - The server refuses to start in production with a placeholder or short `JWT_SECRET`.
 > - `npm start -w server` is the production start. `NODE_ENV` comes from the environment (the Docker image), and on SIGTERM the server finishes in-flight requests and closes its database connections.
 
+> **Decision (Phase 12, Step 3):** The server image is one stage on `node:24-slim`, built from the repo root (`docker build -f server/Dockerfile -t job-tracker-server .`) because the workspaces share one lockfile.
+>
+> - `prisma` moved from `devDependencies` to `dependencies`, because the image generates the client at build time and runs `prisma migrate deploy` itself. Test tools stay out (`npm ci --omit=dev`).
+> - The image holds no secrets: `.dockerignore` excludes every `.env`, and settings arrive as environment variables at `docker run`.
+> - It runs as the unprivileged `node` user, and `CMD` calls `node` directly so SIGTERM reaches the server.
+> - The image is built for x86 (`amd64`), so EC2 must use an x86 type such as `t3.micro`. ARM types (`t4g`) can't run it without a separate ARM build.
+> - It's about 1 GB on disk, mostly the Prisma packages. We accept that for simplicity. The alternative is a separate migration image.
+
 ---
 
 ## Folder structure (monorepo)

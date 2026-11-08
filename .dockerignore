@@ -1,0 +1,12 @@
+# Files Docker must not send to the build, so secrets and junk can't enter an image.
+.git
+.env
+.env.*
+**/.env
+**/.env.*
+**/node_modules
+**/dist
+**/coverage
+**/*.log
+server/src/generated
+server/tests
