@@ -161,4 +161,4 @@ There is no `.claude/` folder yet. `CLAUDE.md` is the only Claude Code file in t
 
 ## Deployment
 
-_Coming in Phase 12 (AWS): Docker on EC2, RDS PostgreSQL, S3 + CloudFront._
+AWS: Docker on EC2, RDS PostgreSQL, S3 + CloudFront. Step-by-step notes are in [deploy/README.md](deploy/README.md) (in progress, Phase 12).
