@@ -26,6 +26,13 @@ const jwtSecret = process.env.JWT_SECRET;
 if (!jwtSecret) {
   throw new Error('JWT_SECRET is not set');
 }
+// Anyone who can guess this secret can forge a login token for any user.
+if (
+  nodeEnv === 'production' &&
+  (jwtSecret.length < 32 || jwtSecret === 'replace-with-a-long-random-string')
+) {
+  throw new Error('In production, JWT_SECRET must be a random string of at least 32 characters');
+}
 
 export const config = {
   nodeEnv,

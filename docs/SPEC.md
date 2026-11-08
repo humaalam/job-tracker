@@ -56,7 +56,7 @@ The app lets users sign up, track job applications through a fixed status pipeli
 > | **zod** | A library that checks incoming data has the right shape (e.g. email is a valid email). | It rejects bad input before it reaches the database. | Joi |
 > | **bcrypt** | A library that hashes passwords so they're never stored in plain text. | It's the industry-standard way to store passwords safely. | argon2 |
 > | **JWT in an httpOnly cookie** | A signed token proving who you are, stored in a cookie that browser JavaScript can't read. | It keeps users logged in without server-side sessions, and it's safer than localStorage. | Server sessions (express-session) |
-> | **cookie-parser / cors** | Small Express helpers to read cookies and to control which websites may call the API. | They're needed for cookie-based auth and for local development. | Hand-written middleware |
+> | **cookie-parser** | A small Express helper that reads cookies from requests. | It's needed for cookie-based auth. | Hand-written middleware |
 
 ### Frontend
 
@@ -162,6 +162,14 @@ The app lets users sign up, track job applications through a fixed status pipeli
 > - The console is used through the **Owner (root)** login, protected by MFA, because console access for the IAM user and IAM access to billing weren't available in the new console.
 > - `huma-admin` (AdministratorAccess) is for the **AWS CLI only**. Its access key is created in Step 5 and never goes in the repo.
 > - Spending is watched with a zero-spend budget and a $10 monthly budget, plus the Free Tier page. The Free Tier email alert setting wasn't found.
+
+> **Decision (Phase 12, Step 2):** We don't use the `cors` package, and `CLIENT_ORIGIN` is removed. The browser only ever talks to one origin: Vite's proxy in development, CloudFront in production. With no CORS headers, browsers refuse to let other websites read API responses, and `SameSite=Lax` keeps the login cookie off cross-site POSTs.
+>
+> Production hardening:
+>
+> - The auth cookie was already `HttpOnly`, `SameSite=Lax` and `Secure` when `NODE_ENV=production`. A test now covers this.
+> - The server refuses to start in production with a placeholder or short `JWT_SECRET`.
+> - `npm start -w server` is the production start. `NODE_ENV` comes from the environment (the Docker image), and on SIGTERM the server finishes in-flight requests and closes its database connections.
 
 ---
 

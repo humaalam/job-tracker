@@ -77,7 +77,6 @@ All of them live in one `.env` file at the repo root (copy `.env.example`). Dock
 | `DATABASE_URL`                                                       | The development database                                                   |
 | `TEST_DATABASE_URL`                                                  | A separate database that the tests wipe and refill                         |
 | `JWT_SECRET`, `JWT_EXPIRES_IN`                                       | Signing login tokens (use a long random secret) and how long a login lasts |
-| `CLIENT_ORIGIN`                                                      | The frontend's address, allowed by CORS                                    |
 
 ## Testing
 
