@@ -155,6 +155,14 @@ The app lets users sign up, track job applications through a fixed status pipeli
 | **Amazon CloudFront**       | A CDN that serves files fast worldwide, with HTTPS.                   | It serves the React app and forwards `/api/*` to EC2, so everything is on one domain and cookies just work. | Nginx in front of everything on EC2    |
 | **AWS Budgets**             | Sends alerts when spending passes a set amount.                       | Prevents surprise bills while learning.                                                                     | Billing alarms in CloudWatch           |
 
+> **Decision (Phase 12, Step 1):** The account is on the AWS **Free plan**, and all regional resources (RDS, EC2, ECR, S3) go in **`eu-north-1`** (Stockholm).
+>
+> What the account setup actually allowed differs from the original plan of a daily-use admin IAM user:
+>
+> - The console is used through the **Owner (root)** login, protected by MFA, because console access for the IAM user and IAM access to billing weren't available in the new console.
+> - `huma-admin` (AdministratorAccess) is for the **AWS CLI only**. Its access key is created in Step 5 and never goes in the repo.
+> - Spending is watched with a zero-spend budget and a $10 monthly budget, plus the Free Tier page. The Free Tier email alert setting wasn't found.
+
 ---
 
 ## Folder structure (monorepo)
